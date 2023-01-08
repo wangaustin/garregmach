@@ -33,7 +33,7 @@ COLLECTION_SCHOOL = DATABASE.School
 COLLECTION_PROFESSOR = DATABASE.Professor
 COLLECTION_MATERIAL = DATABASE.Material
 
-
+# @st.cache(ttl=10)
 def find_school_of_deparment():
     obj_id_school = COLLECTION_DEPARTMENT.find_one()['school']
     school_of_department = COLLECTION_SCHOOL.find_one({'_id' : obj_id_school})['name']
@@ -43,6 +43,7 @@ def find_school_of_deparment():
 # @param: None
 # @return: a list of all school names
 # """
+# @st.cache(ttl=10)
 def find_all_schools():
     school_list = []
     for doc in COLLECTION_SCHOOL.find():
@@ -53,6 +54,7 @@ def find_all_schools():
 # @param: ObjectId of the school in question
 # @return: a list of all departments for this school
 # """
+# @st.cache(ttl=10)
 def find_all_departments_for_school(school):
     department_list = []
     for doc in COLLECTION_DEPARTMENT.find({'school' : school}):
@@ -64,6 +66,7 @@ def find_all_departments_for_school(school):
 # @param: ObjectId of the department in question
 # @return: a list of all professors for this department (related to a school)
 # """
+# @st.cache(ttl=10)
 def find_all_professors_for_department(department):
     professor_list = []
     for doc in COLLECTION_PROFESSOR.find({'department' : department}):
@@ -77,6 +80,7 @@ def find_all_professors_for_department(department):
 # @param: professor - ObjectId of professor in question
 # @return: list of courses taught my this professor at this department
 # """
+# @st.cache(ttl=60)
 def find_all_courses(department, professor):
     course_list = []
     for doc in COLLECTION_COURSE.find({'department': department, 'professor': professor}):
@@ -95,34 +99,15 @@ with tab2:
     # for doc in COLLECTION_MATERIAL.find().limit(10):
     #     st.write(doc)
 
-    # doc = COLLECTION_MATERIAL.find()
     for doc in COLLECTION_MATERIAL.find().limit(10):
     # build exapnder name from course id
-        course_doc = COLLECTION_COURSE.find_one({'_id': doc['course_id']})
-        expander_name = doc['material_title']
-
-        with st.expander(expander_name):
-            st.subheader(doc['material_title'])
-            department_doc = COLLECTION_DEPARTMENT.find_one({
-                '_id': course_doc['department']
-            })
-            school_doc = COLLECTION_SCHOOL.find_one({
-                '_id': department_doc['school']
-            })
-            st.caption('School')
-            st.write(school_doc['name'])
-            st.caption('Department')
-            st.write(department_doc['name'])
-            course_name = department_doc['abbreviation'] + ' ' + course_doc['course_id'] + " (" + course_doc['name'] + ')'
-            st.caption('Course Name')
-            st.write(course_name)
-            st.caption('Material Status')
-            st.write(doc['material_status'])
-            st.caption('Uploader Alias')
-            st.write(doc['uploader_alias'])
-            st.caption('Material URL')
-            st.write(helpers.make_clickable_link(doc['material_url'], doc['material_type']))
-
+        helpers.format_material_doc(
+            doc,
+            COLLECTION_COURSE,
+            COLLECTION_DEPARTMENT,
+            COLLECTION_SCHOOL,
+            COLLECTION_PROFESSOR
+        )
 
 
 
@@ -274,7 +259,8 @@ with tab3:
                 'material_title': material_title,
                 'material_description': material_description,
                 'uploader_alias': uploader_alias,
-                'sentiment_score': 0,
+                'upvote': int(0),
+                'downvote': int(0),
                 'datetime_added': datetime.utcnow()
             })
 
@@ -291,13 +277,11 @@ with tab3:
 with tab1:
     st.header("Search")
 
-    subtab1, subtab2 = st.tabs(['Precise Search', 'By School'])
+    subtab1, subtab2 = st.tabs(['Precise Search', 'By Professor'])
 
     with subtab2:
-        school_filters = st.multiselect(
-            "School",
-            school_list_for_display
-        )
+        st.write("What should this structure be?")
+            
 
 
 
