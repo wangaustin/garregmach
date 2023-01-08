@@ -5,6 +5,13 @@ import pymongo
 from pymongo import MongoClient
 import configs
 
+# # TODO: DELETE OR UNCOMMENT
+# import os, sys
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# # import helper functions ../helpers.py
+# import helpers
+
+
 # set configs
 st.set_page_config(
     page_title="Library"
@@ -30,47 +37,61 @@ client = init_connection()
 
 DATABASE = client.LibraryDB
 COLLECTION_COURSE = DATABASE.Course
+COLLECTION_DEPARTMENT = DATABASE.Department
+COLLECTION_SCHOOL = DATABASE.School
+COLLECTION_PROFESSOR = DATABASE.Professor
 
-st.write(COLLECTION_COURSE.find_one())
 
+def find_school_of_deparment():
+    obj_id_school = COLLECTION_DEPARTMENT.find_one()['school']
+    school_of_department = COLLECTION_SCHOOL.find_one({'_id' : obj_id_school})['name']
+    return school_of_department
 
-# define initial schema for everything as dummies
-dummy_course = {
-    "course_id": 1, # obj_id
-    "department": 88, # obj_id, not number
-    "professor": 9, # obj_id
-    "level": "Undergraduate"
-}
+# """
+# @param: None
+# @return: a list of all school names
+# """
+def find_all_schools():
+    school_list = []
+    for doc in COLLECTION_SCHOOL.find():
+        school_list.append([doc['_id'], doc['name']])
+    return school_list
 
-dummy_department = {
-    "name": "Philosophy",
-    "department_head": 9,
-    "url": "https://www.google.com"
-}
+# """
+# @param: ObjectId of the school in question
+# @return: a list of all departments for this school
+# """
+def find_all_departments_for_school(school):
+    department_list = []
+    for doc in COLLECTION_DEPARTMENT.find({'school' : school}):
+        department_list.append([doc['_id'], doc['name'], doc['abbreviation']])
 
-dummy_professor = {
-    "first_name": "John",
-    "last_name": "Doe",
-    "department": 88, # obj_id
-    "courses": ["course 1", "course 2", "course 3"]
-}
+    return department_list
 
-dummy_school = {
-    "name" : "Vanderbilt",
-    "email_handle": "vanderbilt.edu", # what comes after @
-    "url": "https://www.google.com"
-}
+# """
+# @param: ObjectId of the department in question
+# @return: a list of all professors for this department (related to a school)
+# """
+def find_all_professors_for_department(department):
+    professor_list = []
+    for doc in COLLECTION_PROFESSOR.find({'department' : department}):
+        professor_info = [doc['_id'], doc['first_name'], doc['last_name']]
+        professor_list.append(professor_info)
 
-# is this necessary?
-dummy_material_type = {
-    "format": "PDF",
-    "priority": 0
-}
+    return professor_list
 
-# is this necessary?
-dummy_material_status = {
-    "status": "Professor Requested/Approved" # or sth. like supplementary
-}
+# """
+# @param: department - ObjecId of department in question
+# @param: professor - ObjectId of professor in question
+# @return: list of courses taught my this professor at this department
+# """
+def find_all_courses(department, professor):
+    course_list = []
+    for doc in COLLECTION_COURSE.find({'department': department, 'professor': professor}):
+        course_info = [doc['_id'], doc['course_id'], doc['name']]
+        course_list.append(course_info)
+    
+    return course_list
 
 
 # UI layout
@@ -84,37 +105,88 @@ with tab2:
 with tab1:
     st.header("Add to Database")
 
-    # not using a form here because that would not allow for dynamic
-    # conditional field update
-
-    # TODO: change to actual db data for all
-    dummy_school_list = ["Vanderbilt", "TSU", "Belmont"]
+    # -----------------------------
+    # ------ SCHOOL
+    # -----------------------------
+    ret_school_list = find_all_schools()
+    if len(ret_school_list) == 0:
+        st.error(
+            "No school has been added to this database! Please contact support.",
+            icon="🚨"
+        )
+        st.stop()
+    # compile school list for display
+    school_list_for_display = []
+    for school in ret_school_list:
+        school_list_for_display.append(school[1])
+    # build dropdown list
     school = st.selectbox(
         "School",
-        dummy_school_list
+        range(len(school_list_for_display)),
+        format_func=lambda x: school_list_for_display[x]
     )
 
-    dummy_department_list = ["Philosophy", "Computer Science", "Physics"]
+    # -----------------------------
+    # ------ DEPARTMENT
+    # -----------------------------
+
+
+    school_obj_id = ret_school_list[school][0]
+    ret_department_list = find_all_departments_for_school(school_obj_id)
+    if len(ret_department_list) == 0:
+        st.error("No deparment has been added for this school! Please contact support.", icon="🚨")
+        st.stop()
+    # compile department list for siplay
+    department_list_for_display = []
+    for department in ret_department_list:
+        department_list_for_display.append(department[1])
+    
+    # build dropdown list
     department = st.selectbox(
         "Department",
-        dummy_department_list
+        range(len(department_list_for_display)),
+        format_func=lambda x: department_list_for_display[x]
     )
 
-    dummy_professor_list = ["John Doe", "Jane Doe", "Santa Claus"]
+    # -----------------------------
+    # ------ PROFESSOR
+    # -----------------------------
+    department_obj_id = ret_department_list[department][0]
+    ret_professor_list = find_all_professors_for_department(department_obj_id)
+    # compile professor list for display
+    professor_list_for_display = []
+    for professor in ret_professor_list:
+        professor_full_name = professor[1] + ' ' + professor[2]
+        professor_list_for_display.append(professor_full_name)
+    # build dropdown list
     professor = st.selectbox(
         "Professor",
-        dummy_professor_list
+        range(len(professor_list_for_display)),
+        format_func=lambda x: professor_list_for_display[x]
     )
 
-    dummy_course_list = ["4201", "1002", "3008"]
+    professor_obj_id = ret_professor_list[professor][0]
+    ret_course_list = find_all_courses(department_obj_id, professor_obj_id)
+    department_abbreviation = ret_department_list[department][2]
+    course_list_for_display = []
+    for course in ret_course_list:
+        course_full_name = department_abbreviation + ' ' + course[1]
+        course_full_name += ' (' + course[2] + ')'
+        course_list_for_display.append(course_full_name)
+
     course_id = st.selectbox(
         "Course ID",
-        dummy_course_list
+        course_list_for_display
     )
 
     material_type = st.selectbox(
         "Material Type",
-        configs._MATERIAL_TYPE_LIST
+        configs._LIBRARY_MATERIAL_TYPE_LIST
+    )
+    
+    material_status = st.selectbox(
+        "Material Status",
+        configs._LIBRARY_MATERIAL_STATUS
     )
 
     material_url = st.text_input(

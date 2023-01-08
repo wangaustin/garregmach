@@ -13,15 +13,7 @@ hide_streamlit_style = """
             footer {visibility: hidden;}
             </style>
             """
-# st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
-# construct sidebar
-with st.sidebar:
-    st.header("Garreg Mach")
-    # doesn't seem like we can use a container here
-    st.subheader("ℹ️ About")
-    st.write("The Garreg Mach Project is being actively developed by Austin Wang")
-
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 st.header("Welcome to Garreg Mach Project!")
 
