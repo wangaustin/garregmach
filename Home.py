@@ -1,8 +1,4 @@
 import streamlit as st
-import pandas as pd
-from datetime import date, datetime
-import pymongo
-from pymongo import MongoClient
 
 # todo: set configs
 st.set_page_config(
