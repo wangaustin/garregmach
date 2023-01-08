@@ -18,22 +18,13 @@ st.set_page_config(
     # initial_sidebar_state="collapsed" # TODO: change to collapsed for deployment
 )
 
-# hide "made with streamlit" and upper right hamburger
-hide_streamlit_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+st.markdown(configs.hide_streamlit_style, unsafe_allow_html=True)
+
+configs.setup_library_header()
 
 st.title("📚 Library")
 
-# get mongodb connection
-@st.experimental_singleton(suppress_st_warning=True)
-def init_connection():
-    return pymongo.MongoClient(st.secrets['db_connection_url'])
-client = init_connection()
+client = configs.init_connection()
 
 DATABASE = client.LibraryDB
 COLLECTION_COURSE = DATABASE.Course
@@ -101,10 +92,41 @@ tab1, tab2, tab3, tab4 = st.tabs(configs._LIBRARY_TAB_NAMES)
 # TODO: switch order of 'recently added' and 'add to database'
 with tab2:
     st.header("Recently Added")
-    for doc in COLLECTION_MATERIAL.find().limit(10):
-        st.write(doc)
+    # for doc in COLLECTION_MATERIAL.find().limit(10):
+    #     st.write(doc)
 
-with tab1:
+    # doc = COLLECTION_MATERIAL.find()
+    for doc in COLLECTION_MATERIAL.find().limit(10):
+    # build exapnder name from course id
+        course_doc = COLLECTION_COURSE.find_one({'_id': doc['course_id']})
+        expander_name = doc['material_title']
+
+        with st.expander(expander_name):
+            st.subheader(doc['material_title'])
+            department_doc = COLLECTION_DEPARTMENT.find_one({
+                '_id': course_doc['department']
+            })
+            school_doc = COLLECTION_SCHOOL.find_one({
+                '_id': department_doc['school']
+            })
+            st.caption('School')
+            st.write(school_doc['name'])
+            st.caption('Department')
+            st.write(department_doc['name'])
+            course_name = department_doc['abbreviation'] + ' ' + course_doc['course_id'] + " (" + course_doc['name'] + ')'
+            st.caption('Course Name')
+            st.write(course_name)
+            st.caption('Material Status')
+            st.write(doc['material_status'])
+            st.caption('Uploader Alias')
+            st.write(doc['uploader_alias'])
+            st.caption('Material URL')
+            st.write(helpers.make_clickable_link(doc['material_url'], doc['material_type']))
+
+
+
+
+with tab3:
     st.header("Add")
 
     # -----------------------------
@@ -207,6 +229,14 @@ with tab1:
     # -----------------------------
     # ------ MATERIAL DESCRIPTION
     # -----------------------------
+    material_title = st.text_input(
+        "Material Title",
+        placeholder="To Save a Mockingbird"
+    )
+
+    # -----------------------------
+    # ------ MATERIAL DESCRIPTION
+    # -----------------------------
     material_description = st.text_input(
         "Material Description",
         placeholder="This is the PDF of the requested textbook."
@@ -230,17 +260,18 @@ with tab1:
         ret_message = helpers.check_pending_add_validity(
             school, department, professor, course_id,
             material_type, material_status, material_url,
-            material_description, uploader_alias)
+            material_title, material_description, uploader_alias)
         
         # use ObjectIds
         def add_material(
             course_id, material_type, material_status,
-            material_url, material_description, uploader_alias):
+            material_url, material_title, material_description, uploader_alias):
             COLLECTION_MATERIAL.insert_one({
                 'course_id': course_id,
                 'material_type': material_type,
                 'material_status': material_status,
                 'material_url': material_url,
+                'material_title': material_title,
                 'material_description': material_description,
                 'uploader_alias': uploader_alias,
                 'sentiment_score': 0,
@@ -252,13 +283,23 @@ with tab1:
             course_id_to_add = ret_course_list[course_id][0]
             add_material(
                 course_id_to_add, material_type, material_status, material_url,
-                material_description, uploader_alias)
+                material_title, material_description, uploader_alias)
             st.success("Submitted!", icon='✅')
         else:
             st.error(ret_message[1], icon='🚨')
 
-with tab3:
+with tab1:
     st.header("Search")
+
+    subtab1, subtab2 = st.tabs(['Precise Search', 'By School'])
+
+    with subtab2:
+        school_filters = st.multiselect(
+            "School",
+            school_list_for_display
+        )
+
+
 
 with tab4:
     st.header("More")
