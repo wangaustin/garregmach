@@ -358,23 +358,39 @@ with tab1:
         if st.button("Find Materials"):
             st.subheader("Search Results")
             course_obj_id = ret_course_list[course_id][0]
+
+            # build AND query logic
+            and_query_logic = []
+
+            # material status not selected
+            if len(material_type_list) > 0:
+                and_query_logic.append(
+                    {'material_type':{
+                        "$in": material_type_list
+                    }}     
+                )
+
+            if len(material_status_list) > 0:
+                and_query_logic.append(
+                    {'material_status':{
+                        "$in": material_status_list
+                    }}
+                )
+            if len(material_title) > 0:
+                and_query_logic.append(
+                    {'material_title':{
+                        "$regex": material_title,
+                        "$options": "$i"
+                    }}
+                )
+
+            and_query_logic.append({'course_id': course_obj_id})
             ret_materials_cursor = COLLECTION_MATERIAL.find(
-                {"$and":
-                    [
-                        {'material_type':{
-                            "$in": material_type_list
-                        }},
-                        {'material_status':{
-                            "$in": material_status_list
-                        }},
-                        {'material_title':{
-                            "$regex": material_title,
-                            "$options": "$i"
-                        }},
-                    ]
-                },
-                {'course_id': course_obj_id}
-            )
+                    {"$and":
+                        and_query_logic
+                    }
+                )
+
             for doc in ret_materials_cursor:
                 new_doc = COLLECTION_MATERIAL.find_one({'_id': doc['_id']})
                 helpers.format_material_doc(
