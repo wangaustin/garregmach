@@ -21,7 +21,8 @@ hide_streamlit_style = """
             <style>
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
-            .reportview-container .main footer {visibility: hidden;}
+            .styles_terminationButton__3xUnY {visibility: hidden}
+            .viewerBadge_container__1QSob {visibility: hidden}
             </style>
             """
 
