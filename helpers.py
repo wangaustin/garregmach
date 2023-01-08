@@ -87,10 +87,16 @@ def format_material_doc(
         downvote_button_key_name = 'downvote-' + str(doc['_id']) + '-' + key_extension
         upvote_button_text = "👍 Upvote" + ' (' + str(doc['upvote']) + ')'
         downvote_button_text = "👎 Downvote" + ' (' + str(doc['downvote']) + ')'
-        if col_left.button(upvote_button_text, key=upvote_button_key_name):
-            st.write('Social feature is currently pending implementation!')
-        if col_right.button(downvote_button_text, key=downvote_button_key_name):
-            st.write('Social feature is currently pending implementation!')
+        if col_left.button(
+            upvote_button_text,
+            help="Social feature is currently pending implementation!",
+            key=upvote_button_key_name):
+                st.write("Pending implementation...")
+        if col_right.button(
+            downvote_button_text,
+            help="Social feature is currently pending implementation!",
+            key=downvote_button_key_name):
+                st.write('Social feature is currently pending implementation!')
 
 
 # """

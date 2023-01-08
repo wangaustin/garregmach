@@ -280,7 +280,7 @@ with tab3:
 with tab1:
     st.header("Search")
 
-    subtab1, subtab2 = st.tabs(['Precise Search', 'By Professor'])
+    subtab1, subtab2 = st.tabs(['By Course', 'By Uploader Alias'])
 
     with subtab1:
         # ----- SCHOOL -----
@@ -356,6 +356,9 @@ with tab1:
         )
 
         if st.button("Find Materials"):
+            if course_id is None:
+                st.error("Must select a course!", icon="🚨")
+                st.stop()
             st.subheader("Search Results")
             course_obj_id = ret_course_list[course_id][0]
 
@@ -390,11 +393,36 @@ with tab1:
                         and_query_logic
                     }
                 )
+            cursor_length = len(list(ret_materials_cursor.clone()))
 
+            if cursor_length > 0:
+                info_msg = "Found " + str(cursor_length) + " results!"
+                st.info(info_msg, icon="📬")
+                for doc in ret_materials_cursor:
+                    new_doc = COLLECTION_MATERIAL.find_one({'_id': doc['_id']})
+                    helpers.format_material_doc(
+                        new_doc,
+                        COLLECTION_COURSE,
+                        COLLECTION_DEPARTMENT,
+                        COLLECTION_SCHOOL,
+                        COLLECTION_PROFESSOR,
+                        "search"
+                    )
+            else:
+                st.error("No materials found.", icon="📭")
+
+    with subtab2:
+        uploader_alias = st.text_input(
+            "Uploader Alias",
+            placeholder="tintinisagoodboi",
+            key="uploader_alias_text_input_search"
+        )
+        if st.button("Find Materials", key="search_by_uploader_alias_button"):
+            st.subheader("Search Results")
+            ret_materials_cursor = COLLECTION_MATERIAL.find({'uploader_alias': uploader_alias})
             for doc in ret_materials_cursor:
-                new_doc = COLLECTION_MATERIAL.find_one({'_id': doc['_id']})
                 helpers.format_material_doc(
-                    new_doc,
+                    doc,
                     COLLECTION_COURSE,
                     COLLECTION_DEPARTMENT,
                     COLLECTION_SCHOOL,
@@ -402,10 +430,6 @@ with tab1:
                     "search"
                 )
 
-
-
-    with subtab2:
-        st.write("What should this structure be?")
             
 
 
