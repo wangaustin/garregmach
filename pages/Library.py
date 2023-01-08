@@ -103,7 +103,7 @@ with tab2:
     # TODO: show 10
 
 with tab1:
-    st.header("Add to Database")
+    st.header("Add")
 
     # -----------------------------
     # ------ SCHOOL

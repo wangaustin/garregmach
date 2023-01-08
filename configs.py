@@ -1,5 +1,5 @@
 _LIBRARY_TAB_NAMES = [
-    "Add to Database",
+    "Add",
     "Recently Added",
     "Search",
     "More"
