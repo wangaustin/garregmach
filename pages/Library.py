@@ -5,11 +5,11 @@ import pymongo
 from pymongo import MongoClient
 import configs
 
-# # TODO: DELETE OR UNCOMMENT
-# import os, sys
-# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-# # import helper functions ../helpers.py
-# import helpers
+# import helper functions ../helpers.py
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import helpers
 
 
 # set configs
@@ -40,6 +40,7 @@ COLLECTION_COURSE = DATABASE.Course
 COLLECTION_DEPARTMENT = DATABASE.Department
 COLLECTION_SCHOOL = DATABASE.School
 COLLECTION_PROFESSOR = DATABASE.Professor
+COLLECTION_MATERIAL = DATABASE.Material
 
 
 def find_school_of_deparment():
@@ -100,7 +101,8 @@ tab1, tab2, tab3, tab4 = st.tabs(configs._LIBRARY_TAB_NAMES)
 # TODO: switch order of 'recently added' and 'add to database'
 with tab2:
     st.header("Recently Added")
-    # TODO: show 10
+    for doc in COLLECTION_MATERIAL.find().limit(10):
+        st.write(doc)
 
 with tab1:
     st.header("Add")
@@ -129,8 +131,6 @@ with tab1:
     # -----------------------------
     # ------ DEPARTMENT
     # -----------------------------
-
-
     school_obj_id = ret_school_list[school][0]
     ret_department_list = find_all_departments_for_school(school_obj_id)
     if len(ret_department_list) == 0:
@@ -165,6 +165,9 @@ with tab1:
         format_func=lambda x: professor_list_for_display[x]
     )
 
+    # -----------------------------
+    # ------ COURSE
+    # -----------------------------
     professor_obj_id = ret_professor_list[professor][0]
     ret_course_list = find_all_courses(department_obj_id, professor_obj_id)
     department_abbreviation = ret_department_list[department][2]
@@ -176,59 +179,83 @@ with tab1:
 
     course_id = st.selectbox(
         "Course ID",
-        course_list_for_display
+        range(len(course_list_for_display)),
+        format_func=lambda x: course_list_for_display[x]
     )
 
     material_type = st.selectbox(
         "Material Type",
         configs._LIBRARY_MATERIAL_TYPE_LIST
     )
-    
+
+    # -----------------------------
+    # ------ MATERIAL STATUS
+    # -----------------------------
     material_status = st.selectbox(
         "Material Status",
         configs._LIBRARY_MATERIAL_STATUS
     )
 
+    # -----------------------------
+    # ------ MATERIAL URL
+    # -----------------------------
     material_url = st.text_input(
         "Material URL",
         placeholder="https://www.austinwang.co"
     )
 
+    # -----------------------------
+    # ------ MATERIAL DESCRIPTION
+    # -----------------------------
     material_description = st.text_input(
         "Material Description",
         placeholder="This is the PDF of the requested textbook."
     )
 
+    # -----------------------------
+    # ------ UPLOADER ALIAS
+    # -----------------------------
     uploader_alias = st.text_input(
         "Uploader Alias (Optional)",
         placeholder="anonymous"
     )
 
-    # def pretty_get_pending_add():
-    #     text = "School: " + school
-    #     text += "\nDepartment: " + department
-    #     text += "\nProfessor: " + professor
-    #     text += "\nCourse ID: " + course_id
-    #     text += "\nMaterial Type: " + material_type
-    #     text += "\tMaterial URL: " + str(material_url)
-    #     text += "\nMaterial Description: " + material_description
-    #     text += "\nUploader Alias: " + uploader_alias
-    #     return text
-
-    if st.button("Check Inputted Data"):
-        st.write("Checking validity...")
-        # st.write(pretty_get_pending_add())
 
 
     if st.button("Submit"):
         def check_data_validity():
             # TODO: add validity logic, currently it's just dummy
-            return True
+            return False
 
-        if check_data_validity():
-            st.success("Submitted!", icon="✅")
+        ret_message = helpers.check_pending_add_validity(
+            school, department, professor, course_id,
+            material_type, material_status, material_url,
+            material_description, uploader_alias)
+        
+        # use ObjectIds
+        def add_material(
+            course_id, material_type, material_status,
+            material_url, material_description, uploader_alias):
+            COLLECTION_MATERIAL.insert_one({
+                'course_id': course_id,
+                'material_type': material_type,
+                'material_status': material_status,
+                'material_url': material_url,
+                'material_description': material_description,
+                'uploader_alias': uploader_alias,
+                'sentiment_score': 0,
+                'datetime_added': datetime.utcnow()
+            })
+
+
+        if ret_message[0]:
+            course_id_to_add = ret_course_list[course_id][0]
+            add_material(
+                course_id_to_add, material_type, material_status, material_url,
+                material_description, uploader_alias)
+            st.success("Submitted!", icon='✅')
         else:
-            st.error("ERROR! Please check data first.")
+            st.error(ret_message[1], icon='🚨')
 
 with tab3:
     st.header("Search")
