@@ -21,6 +21,7 @@ hide_streamlit_style = """
             <style>
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
+            .reportview-container .main footer {visibility: hidden;}
             </style>
             """
 

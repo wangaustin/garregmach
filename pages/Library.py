@@ -14,7 +14,8 @@ import helpers
 
 # set configs
 st.set_page_config(
-    page_title="Library"
+    page_title = "Library",
+    page_icon = "📚"
     # initial_sidebar_state="collapsed" # TODO: change to collapsed for deployment
 )
 
