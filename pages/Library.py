@@ -14,9 +14,8 @@ import helpers
 
 # set configs
 st.set_page_config(
-    page_title = "Library",
+    page_title = "Garreg Mach · Library",
     page_icon = "📚"
-    # initial_sidebar_state="collapsed" # TODO: change to collapsed for deployment
 )
 
 st.markdown(configs.hide_streamlit_style, unsafe_allow_html=True)

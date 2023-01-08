@@ -3,8 +3,7 @@ import configs
 
 # todo: set configs
 st.set_page_config(
-    page_title="Garreg Mach"
-    # initial_sidebar_state="collapsed" # TODO: change to collapsed for deployment
+    page_title="Garreg Mach · Home",
 )
 
 st.markdown(configs.hide_streamlit_style, unsafe_allow_html=True)

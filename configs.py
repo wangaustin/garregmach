@@ -16,13 +16,15 @@ _LIBRARY_MATERIAL_STATUS = [
     "Supplementary"
 ]
 
+
 # hide "made with streamlit" and upper right hamburger
 hide_streamlit_style = """
             <style>
-            #MainMenu {visibility: hidden;}
+            # MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
-            .styles_terminationButton__3xUnY {visibility: hidden}
-            .viewerBadge_container__1QSob {visibility: hidden}
+            .stApp [data-testid="stToolbar"] {display: none;}
+            .styles_stateContainer__29Rp6 [data-testid="manage-app-button"] {display: none;}
+            .styles_stateContainer__29Rp6 .viewerBadge_container__1QSob {display: none;}
             </style>
             """
 
