@@ -49,10 +49,11 @@ def format_material_doc(
     COLLECTION_COURSE,
     COLLECTION_DEPARTMENT,
     COLLECTION_SCHOOL,
-    COLLECTION_PROFESSOR
+    COLLECTION_PROFESSOR,
+    key_extension
     ):
     course_doc = COLLECTION_COURSE.find_one({'_id': doc['course_id']})
-    expander_name = doc['material_title']
+    expander_name = doc['material_title'] + ' (' +doc['material_type'] + ')'
 
     with st.expander(expander_name):
         st.subheader(doc['material_title'])
@@ -80,15 +81,16 @@ def format_material_doc(
         st.write(doc['uploader_alias'])
         st.caption('Material URL')
         st.write(make_clickable_link(doc['material_url'], doc['material_type']))
+
         col_left, col_right = st.columns(2, gap="small")
-        upvote_button_key_name = 'upvote\:' + str(doc['_id'])
-        downvote_button_key_name = 'downvote\:' + str(doc['_id'])
+        upvote_button_key_name = 'upvote-' + str(doc['_id']) + '-' + key_extension
+        downvote_button_key_name = 'downvote-' + str(doc['_id']) + '-' + key_extension
         upvote_button_text = "👍 Upvote" + ' (' + str(doc['upvote']) + ')'
-        downvote_button_text = "👍 Downvote" + ' (' + str(doc['downvote']) + ')'
+        downvote_button_text = "👎 Downvote" + ' (' + str(doc['downvote']) + ')'
         if col_left.button(upvote_button_text, key=upvote_button_key_name):
-            st.write('Upvoting!')
+            st.write('Social feature is currently pending implementation!')
         if col_right.button(downvote_button_text, key=downvote_button_key_name):
-            st.write('Downvoting!')
+            st.write('Social feature is currently pending implementation!')
 
 
 # """

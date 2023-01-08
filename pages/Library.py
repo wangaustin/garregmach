@@ -100,13 +100,13 @@ with tab2:
     #     st.write(doc)
 
     for doc in COLLECTION_MATERIAL.find().limit(10):
-    # build exapnder name from course id
         helpers.format_material_doc(
             doc,
             COLLECTION_COURSE,
             COLLECTION_DEPARTMENT,
             COLLECTION_SCHOOL,
-            COLLECTION_PROFESSOR
+            COLLECTION_PROFESSOR,
+            "add"
         )
 
 
@@ -190,6 +190,9 @@ with tab3:
         format_func=lambda x: course_list_for_display[x]
     )
 
+    # -----------------------------
+    # ------ MATERIAL TYPE
+    # -----------------------------
     material_type = st.selectbox(
         "Material Type",
         configs._LIBRARY_MATERIAL_TYPE_LIST
@@ -278,6 +281,112 @@ with tab1:
     st.header("Search")
 
     subtab1, subtab2 = st.tabs(['Precise Search', 'By Professor'])
+
+    with subtab1:
+        # ----- SCHOOL -----
+        school = st.selectbox(
+            "School",
+            range(len(school_list_for_display)),
+            format_func=lambda x: school_list_for_display[x],
+            key="school_selectbox_search"
+        )
+        # ----- DEPARTMENT -----
+        school_obj_id = ret_school_list[school][0]
+        ret_department_list = find_all_departments_for_school(school_obj_id)
+        if len(ret_department_list) == 0:
+            st.error("No deparment has been added for this school! Please contact support.", icon="🚨")
+            st.stop()
+        # compile department list for siplay
+        department_list_for_display = []
+        for department in ret_department_list:
+            department_list_for_display.append(department[1])
+        # build dropdown list
+        department = st.selectbox(
+            "Department",
+            range(len(department_list_for_display)),
+            format_func=lambda x: department_list_for_display[x],
+            key="department_selectbox_search"
+        )
+        # ----- PROFESSOR -----
+        department_obj_id = ret_department_list[department][0]
+        ret_professor_list = find_all_professors_for_department(department_obj_id)
+        # compile professor list for display
+        professor_list_for_display = []
+        for professor in ret_professor_list:
+            professor_full_name = professor[1] + ' ' + professor[2]
+            professor_list_for_display.append(professor_full_name)
+        # build dropdown list
+        professor = st.selectbox(
+            "Professor",
+            range(len(professor_list_for_display)),
+            format_func=lambda x: professor_list_for_display[x],
+            key="professor_selectbox_search"
+        )
+        # ----- COURSE -----
+        professor_obj_id = ret_professor_list[professor][0]
+        ret_course_list = find_all_courses(department_obj_id, professor_obj_id)
+        department_abbreviation = ret_department_list[department][2]
+        course_list_for_display = []
+        for course in ret_course_list:
+            course_full_name = department_abbreviation + ' ' + course[1]
+            course_full_name += ' (' + course[2] + ')'
+            course_list_for_display.append(course_full_name)
+
+        course_id = st.selectbox(
+            "Course ID",
+            range(len(course_list_for_display)),
+            format_func=lambda x: course_list_for_display[x],
+            key="course_selectbox_search"
+        )
+
+        material_type_list = st.multiselect(
+            "Material Type",
+            configs._LIBRARY_MATERIAL_TYPE_LIST
+        )
+
+        material_status_list = st.multiselect(
+            "Material Status",
+            configs._LIBRARY_MATERIAL_STATUS
+        )
+
+        material_title = st.text_input(
+            "Material Title",
+            placeholder="To Save a Mockingbird",
+            key="material_title_text_input_search"
+        )
+
+        if st.button("Find Materials"):
+            st.subheader("Search Results")
+            course_obj_id = ret_course_list[course_id][0]
+            ret_materials_cursor = COLLECTION_MATERIAL.find(
+                {"$and":
+                    [
+                        {'material_type':{
+                            "$in": material_type_list
+                        }},
+                        {'material_status':{
+                            "$in": material_status_list
+                        }},
+                        {'material_title':{
+                            "$regex": material_title,
+                            "$options": "$i"
+                        }},
+                    ]
+                },
+                {'course_id': course_obj_id}
+            )
+            for doc in ret_materials_cursor:
+                new_doc = COLLECTION_MATERIAL.find_one({'_id': doc['_id']})
+                helpers.format_material_doc(
+                    new_doc,
+                    COLLECTION_COURSE,
+                    COLLECTION_DEPARTMENT,
+                    COLLECTION_SCHOOL,
+                    COLLECTION_PROFESSOR,
+                    "search"
+                )
+
+
 
     with subtab2:
         st.write("What should this structure be?")
