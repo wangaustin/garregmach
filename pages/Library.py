@@ -114,7 +114,9 @@ with tab2:
 with tab3:
     st.header("Add to Database")
 
-    add_subtab1, add_subtab2 = st.tabs(["Add Material", "Add Department"])
+    add_subtab1, add_subtab2, add_subtab3, add_subtab4 = st.tabs([
+        "Add Material", "Add Department", "Add Course", "Add Professor"
+    ])
 
     with add_subtab1:
         # ------ SCHOOL
@@ -312,7 +314,81 @@ with tab3:
                     'abbreviation': abbreviation
                 })
                 st.success("Successfully added department. Refresh to see it!", icon="✅")
+    
+    with add_subtab4:
+        # ------ SCHOOL
+        # -----------------------------
+        ret_school_list = find_all_schools()
+        if len(ret_school_list) == 0:
+            st.error(
+                "No school has been added to this database! Please contact support.",
+                icon="🚨"
+            )
+            st.stop()
+        # compile school list for display
+        school_list_for_display = []
+        for school in ret_school_list:
+            school_list_for_display.append(school[1])
+        # build dropdown list
+        school = st.selectbox(
+            "School",
+            range(len(school_list_for_display)),
+            format_func=lambda x: school_list_for_display[x],
+            key="school_selectbox_add_professor"
+        )
+
+        # ------ DEPARTMENT
+        # -----------------------------
+        school_obj_id = ret_school_list[school][0]
+        ret_department_list = find_all_departments_for_school(school_obj_id)
+        if len(ret_department_list) == 0:
+            st.error("No deparment has been added for this school! Please contact support.", icon="🚨")
+            st.stop()
+        # compile department list for siplay
+        department_list_for_display = []
+        for department in ret_department_list:
+            department_list_for_display.append(department[1])
         
+        # build dropdown list
+        department = st.selectbox(
+            "Department",
+            range(len(department_list_for_display)),
+            format_func=lambda x: department_list_for_display[x],
+            key="department_selectbox_add_professor"
+        )
+
+        first_name = st.text_input(
+            "First Name",
+            key="first_name_text_input_add_professor"
+        )
+        last_name = st.text_input(
+            "Last Name",
+            key="last_name_text_input_add_professor"
+        )
+
+        department_obj_id = ret_department_list[department][0]
+
+        # TODO: add helper function for validation and error messaging
+        if st.button("Add Professor", key="submit_button_add_professor"):
+            existing_professor = COLLECTION_PROFESSOR.find_one({
+                'department': department_obj_id,
+                'first_name': first_name.title(),
+                'last_name': last_name.title()
+            })
+
+            if existing_professor is not None:
+                st.error(
+                    "This professor already exists in this department. Please refresh and try again.",
+                    icon='🚨')
+                st.stop()
+            else:
+                COLLECTION_PROFESSOR.insert_one({
+                    'first_name': first_name.title(),
+                    'last_name': last_name.title(),
+                    'department': department_obj_id,
+                    'courses': []
+                })
+                st.success("Successfully added professor to database. Refresh to see it!", icon='✅')
 
 
 with tab1:
@@ -437,7 +513,7 @@ with tab1:
             cursor_length = len(list(ret_materials_cursor.clone()))
 
             if cursor_length > 0:
-                info_msg = "Found " + str(cursor_length) + " results!"
+                info_msg = "Found " + str(cursor_length) + " result(s)!"
                 st.info(info_msg, icon="📬")
                 for doc in ret_materials_cursor:
                     new_doc = COLLECTION_MATERIAL.find_one({'_id': doc['_id']})
