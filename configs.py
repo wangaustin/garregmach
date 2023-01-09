@@ -5,7 +5,7 @@ from pymongo import MongoClient
 _LIBRARY_TAB_NAMES = [
     "🔍 Search",
     "🆕 Recently Added",
-    "➕ Add",
+    "➕ Add to Database",
     "🧸 More"
 ]
 
