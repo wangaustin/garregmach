@@ -9,6 +9,12 @@ _LIBRARY_TAB_NAMES = [
     "🧸 More"
 ]
 
+_LIBRARY_COURSE_LEVEL = {
+    "Undergraduate",
+    "Masters",
+    "PhD"
+}
+
 _LIBRARY_MATERIAL_TYPE_LIST = ["PDF", "Website", "Slides", "Other"]
 
 _LIBRARY_MATERIAL_STATUS = [

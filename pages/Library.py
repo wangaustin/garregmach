@@ -315,13 +315,96 @@ with tab3:
                 })
                 st.success("Successfully added department. Refresh to see it!", icon="✅")
     
+    with add_subtab3:
+        # ----- SCHOOL -----
+        school = st.selectbox(
+            "School",
+            range(len(school_list_for_display)),
+            format_func=lambda x: school_list_for_display[x],
+            key="school_selectbox_add_course"
+        )
+        # ----- DEPARTMENT -----
+        school_obj_id = ret_school_list[school][0]
+        ret_department_list = find_all_departments_for_school(school_obj_id)
+        if len(ret_department_list) == 0:
+            st.error("No deparment has been added for this school! Please contact support.", icon="🚨")
+            st.stop()
+        # compile department list for siplay
+        department_list_for_display = []
+        for department in ret_department_list:
+            department_list_for_display.append(department[1])
+        # build dropdown list
+        department = st.selectbox(
+            "Department",
+            range(len(department_list_for_display)),
+            format_func=lambda x: department_list_for_display[x],
+            key="department_selectbox_add_course"
+        )
+        # ----- PROFESSOR -----
+        department_obj_id = ret_department_list[department][0]
+        ret_professor_list = find_all_professors_for_department(department_obj_id)
+        if len(ret_professor_list) == 0:
+            st.error("No professor has been added for this department! Please refresh page and add at least one professor first.", icon="🚨")
+            st.stop()
+        # compile professor list for display
+        professor_list_for_display = []
+        for professor in ret_professor_list:
+            professor_full_name = professor[1] + ' ' + professor[2]
+            professor_list_for_display.append(professor_full_name)
+        # build dropdown list
+        professor = st.selectbox(
+            "Professor",
+            range(len(professor_list_for_display)),
+            format_func=lambda x: professor_list_for_display[x],
+            key="professor_selectbox_add_course"
+        )
+        professor_obj_id = ret_professor_list[professor][0]
+
+        name = st.text_input(
+            "Course Name",
+            placeholder="Kantian Philosophy",
+            key="name_text_input_add_course"
+        )
+        course_id = st.text_input(
+            "Course ID",
+            placeholder="3847",
+            key="course_id_text_input_add_course"
+        )
+        level = st.selectbox(
+            "Course Level",
+            sorted(configs._LIBRARY_COURSE_LEVEL, reverse=True),
+            key="level_selectbox_add_course"
+        )
+
+        if st.button("Add Course", key="submit_button_add_course"):
+            existing_course = COLLECTION_COURSE.find_one({
+                'course_id': course_id.upper(),
+                'level': level,
+                'name': name.title()
+            })
+            
+            if existing_course is not None:
+                st.error("This course already exists. Please refresh page and try again.", icon="🚨")
+                st.stop()
+            else:
+                COLLECTION_COURSE.insert_one({
+                    'course_id': course_id.upper(),
+                    'department': department_obj_id,
+                    'professor': professor_obj_id,
+                    'level': level,
+                    'name': name.title()
+                })
+                st.success("Successfully added course to database. Refresh to see it!", icon="✅")
+
+
+
     with add_subtab4:
         # ------ SCHOOL
         # -----------------------------
         ret_school_list = find_all_schools()
         if len(ret_school_list) == 0:
             st.error(
-                "No school has been added to this database! Please contact support.",
+                "No school has been added to this database! Please refresh and add at least one department.",
                 icon="🚨"
             )
             st.stop()
@@ -342,7 +425,7 @@ with tab3:
         school_obj_id = ret_school_list[school][0]
         ret_department_list = find_all_departments_for_school(school_obj_id)
         if len(ret_department_list) == 0:
-            st.error("No deparment has been added for this school! Please contact support.", icon="🚨")
+            st.error("No deparment has been added for this school! Please refresh and add at least one department.", icon="🚨")
             st.stop()
         # compile department list for siplay
         department_list_for_display = []
@@ -408,7 +491,7 @@ with tab1:
         school_obj_id = ret_school_list[school][0]
         ret_department_list = find_all_departments_for_school(school_obj_id)
         if len(ret_department_list) == 0:
-            st.error("No deparment has been added for this school! Please contact support.", icon="🚨")
+            st.error("No deparment has been added for this school! Please refresh and add at least one department.", icon="🚨")
             st.stop()
         # compile department list for siplay
         department_list_for_display = []
