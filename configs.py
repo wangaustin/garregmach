@@ -80,9 +80,9 @@ _MAIN_LIBRARY_INTRO = """
     particular course. This mandatory association is what sets it apart from other resource 
     sharing websites such as libgen, as it allows the system to easily filter queries.
     \nSo, if I only want to see the resources for the Modern Philosophy course at
-    Vanderbilt University taught my Dr. Wuerth, for instance, the system can efficiently 
-    query that. The association also adds another layer of filter as it has presumably been 
-    deemed related to this course by the original uploader. 
+    Vanderbilt University taught by Dr. Wuerth, for instance, the system can efficiently 
+    query that. This kind of association also adds another layer of filtering as it has 
+    presumably been deemed related to this course by the original uploader.
     \n#### Ready to Search or Contribute?
     \nHead to 📚 [Library](/Library) now!
     """
