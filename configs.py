@@ -11,11 +11,10 @@ _LIBRARY_TAB_NAMES = [
 
 _LIBRARY_COURSE_LEVEL = {
     "Undergraduate",
-    "Masters",
-    "PhD"
+    "Graduate"
 }
 
-_LIBRARY_MATERIAL_TYPE_LIST = ["PDF", "Website", "Slides", "Other"]
+_LIBRARY_MATERIAL_TYPE_LIST = ["PDF", "Website", "Slides", "Syllabus", "Other"]
 
 _LIBRARY_MATERIAL_STATUS = [
     "Professor Requested / Approved",
@@ -23,13 +22,13 @@ _LIBRARY_MATERIAL_STATUS = [
 ]
 
 _LIBRARY_ADD_SCHOOL_INFO = """
-Adding a school requires a moderator!  
-  
-Please email garregmachproject@gmail.com with the following information:  
-- School Name
-- Email Handle (e.g. for austin.w.wang@vanderbilt.edu, the email handle would be "vanderbilt.edu")
-- Logo URL (or a link to where to find the logo)
-- Website URL (e.g. www.vanderbilt.edu)
+    Adding a school requires a moderator!  
+    
+    Please email garregmachproject@gmail.com with the following information:  
+    - School Name
+    - Email Handle (e.g. for austin.w.wang@vanderbilt.edu, the email handle would be "vanderbilt.edu")
+    - Logo URL (or a link to where to find the logo)
+    - Website URL (e.g. www.vanderbilt.edu)
 """
 
 
@@ -67,6 +66,8 @@ _MAIN_LIBRARY_INTRO = """
     of digital resources to help those who are not. This way, students will hopefully 
     reduce the amount of money needed to spend on physical copies of the academic resources 
     simply because they could not find them online.
+    \nNote that the GMP Library database does not store any files at all. It is purely a 
+    repository of links.
     \n#### Example
     \nSuppose Tintin knows URL link of where to find the PDF for *Critique of Pure Reason*, 
     which is a book requested by a Philosophy course. 
@@ -86,3 +87,18 @@ _MAIN_LIBRARY_INTRO = """
     \n#### Ready to Search or Contribute?
     \nHead to 📚 [Library](/Library) now!
     """
+
+_MAIN_DORMITORY_INTRO = """
+    #### Intro
+    \nThe GMP Dormitory is a platform to rate and review your school's dorms.
+    \n The goal of the GMP Dormitory is to help students make informed 
+    decisions on where they decide to live during their studies.
+"""
+
+_MAIN_DINING_HALL_INTRO = """
+    ### Intro
+    \nThe GMP Dining Hall is a platform to redistribute unused meal swipes and free food 
+    from events.
+    \nThe goal of the GMP Dining Hall is to reduce food waste on campus as well 
+    as helping students in need.
+"""

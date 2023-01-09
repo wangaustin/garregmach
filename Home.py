@@ -17,8 +17,12 @@ with st.expander("📚 Library", expanded=True):
     st.write(configs._MAIN_LIBRARY_INTRO)
 
 st.subheader("🛣 Future Roadmap")
-with st.expander("Coming Soon!"):
-    st.write("Thanks for checking out GMP, please check back later for the project's roadmap!")
+with st.expander("🏠 Dormitory", expanded=False):
+    st.write(configs._MAIN_DORMITORY_INTRO)
+with st.expander("🍕 Dining Hall", expanded=False):
+    st.write(configs._MAIN_DINING_HALL_INTRO)
+
+
 
 st.subheader("💬 Have a Suggestion?")
 st.write("Create an issue at [GMP's Github repo](https://github.com/wangaustin/garregmach)!")
