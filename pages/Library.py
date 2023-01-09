@@ -201,12 +201,12 @@ with tab3:
         )
 
         this_year = datetime.utcnow().year
-        course_term_year = st.selectbox(
+        course_term_year = st.multiselect(
             "Course Term Year",
             range(this_year, this_year - 10, -1)
         )
 
-        course_term_semester = st.selectbox(
+        course_term_semester = st.multiselect(
             "Course Term Semester",
             COLLECTION_SCHOOL.find_one({
                 '_id': school_obj_id
@@ -244,34 +244,13 @@ with tab3:
                 school, department, professor, course_id,
                 material_type, material_status, material_url,
                 material_title, material_description, uploader_alias)
-            
-            # use ObjectIds
-            def add_material(
-                course_id, material_type, material_status,
-                material_url, material_title, material_description, uploader_alias):
-                COLLECTION_MATERIAL.insert_one({
-                    'course_id': course_id,
-                    'material_type': material_type,
-                    'material_status': material_status,
-                    'material_url': material_url,
-                    'material_title': material_title,
-                    'material_description': material_description,
-                    'uploader_alias': uploader_alias,
-                    'upvote': int(0),
-                    'downvote': int(0),
-                    'datetime_added': datetime.utcnow(),
-                    'datetime_updated': datetime.utcnow()
-                })
 
             if ret_response[0]:
                 course_id_to_add = ret_course_list[course_id][0]
-                # add_material(
-                #     course_id_to_add, material_type, material_status, material_url,
-                #     material_title, material_description, uploader_alias)
-                course_term_string = str(course_term_semester) + " " + str(course_term_year)
                 COLLECTION_MATERIAL.insert_one({
                     'course_id': course_id_to_add,
-                    'course_term': course_term_string,
+                    'course_term_year': course_term_year,
+                    'course_term_semester': course_term_semester,
                     'material_type': material_type,
                     'material_status': material_status,
                     'material_url': material_url,
@@ -603,13 +582,13 @@ with tab1:
         )
 
         this_year = datetime.utcnow().year
-        course_term_year = st.selectbox(
+        course_term_year = st.multiselect(
             "Course Term Year",
-            range(this_year, this_year - 10, -1),
+            range(this_year, this_year - 5, -1),
             key="course_term_year_selectbox_search"
         )
 
-        course_term_semester = st.selectbox(
+        course_term_semester = st.multiselect(
             "Course Term Semester",
             COLLECTION_SCHOOL.find_one({
                 '_id': school_obj_id
@@ -663,15 +642,23 @@ with tab1:
                         "$options": "$i"
                     }}
                 )
+            if len(course_term_year) > 0:
+                and_query_logic.append(
+                    {'course_term_year':{
+                        "$in": course_term_year
+                    }}
+                )
+            if len(course_term_semester) > 0:
+                and_query_logic.append(
+                    {'course_term_semester':{
+                        "$in": course_term_semester
+                    }}
+                )
 
             and_query_logic.append({'course_id': course_obj_id})
-            # TODO: check to see if additional conditional logic is needed
-            course_term_filter = str(course_term_semester) + " " + str(course_term_year)
-            and_query_logic.append({'course_term': course_term_filter})
+
             ret_materials_cursor = COLLECTION_MATERIAL.find(
-                    {"$and":
-                        and_query_logic
-                    }
+                    {"$and": and_query_logic}
                 )
             cursor_length = len(list(ret_materials_cursor.clone()))
 
