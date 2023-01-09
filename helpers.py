@@ -152,6 +152,8 @@ def format_material_doc(
         st.write(professor_doc['first_name'], ' ', professor_doc['last_name'])
         st.caption('Course Name')
         st.write(course_name)
+        st.caption("Course Term")
+        st.write(doc['course_term_semester'] + ' ' + str(doc['course_term_year']))
         st.caption('Material Status')
         st.write(doc['material_status'])
         st.caption('Uploader Alias')

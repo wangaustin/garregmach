@@ -201,12 +201,12 @@ with tab3:
         )
 
         this_year = datetime.utcnow().year
-        course_term_year = st.multiselect(
+        course_term_year = st.selectbox(
             "Course Term Year",
             range(this_year, this_year - 10, -1)
         )
 
-        course_term_semester = st.multiselect(
+        course_term_semester = st.selectbox(
             "Course Term Semester",
             COLLECTION_SCHOOL.find_one({
                 '_id': school_obj_id
@@ -583,30 +583,30 @@ with tab1:
 
         this_year = datetime.utcnow().year
         course_term_year = st.multiselect(
-            "Course Term Year",
+            "Course Term Year (Optional)",
             range(this_year, this_year - 5, -1),
             key="course_term_year_selectbox_search"
         )
 
         course_term_semester = st.multiselect(
-            "Course Term Semester",
+            "Course Term Semester (Optional)",
             COLLECTION_SCHOOL.find_one({
                 '_id': school_obj_id
             })['course_term']
         )
 
         material_type_list = st.multiselect(
-            "Material Type",
+            "Material Type (Optional)",
             configs._LIBRARY_MATERIAL_TYPE_LIST
         )
 
         material_status_list = st.multiselect(
-            "Material Status",
+            "Material Status (Optional)",
             configs._LIBRARY_MATERIAL_STATUS
         )
 
         material_title = st.text_input(
-            "Material Title",
+            "Material Title (Optional)",
             placeholder="Critique of Pure Reason",
             key="material_title_text_input_search"
         )
