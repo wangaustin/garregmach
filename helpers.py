@@ -58,16 +58,16 @@ def check_department_pending_add_validity(
         ret_msg += '''\n- \"School\" is not selected'''
     if len(name) == 0:
         is_valid = False
-        ret_msg += '''\n- \"Name\" is empty'''
+        ret_msg += '''\n- \"Department Name\" is empty'''
     if len(website_url) == 0:
         is_valid = False
-        ret_msg += '''\n- \"Website URL\" is empty'''
+        ret_msg += '''\n- \"Department Website URL\" is empty'''
     if not website_url.startswith("http"):
         is_valid = False
-        ret_msg += '''\n- \"Website URL\" does not start with http'''
+        ret_msg += '''\n- \"Department Website URL\" does not start with http'''
     if len(abbreviation) == 0:
         is_valid = False
-        ret_msg += '''\n- \"Abbreviation\" is empty'''
+        ret_msg += '''\n- \"Department Abbreviation\" is empty'''
 
     return [is_valid, ret_msg]
 

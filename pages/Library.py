@@ -199,6 +199,20 @@ with tab3:
             range(len(course_list_for_display)),
             format_func=lambda x: course_list_for_display[x]
         )
+
+        this_year = datetime.utcnow().year
+        course_term_year = st.selectbox(
+            "Course Term Year",
+            range(this_year, this_year - 10, -1)
+        )
+
+        course_term_semester = st.selectbox(
+            "Course Term Semester",
+            COLLECTION_SCHOOL.find_one({
+                '_id': school_obj_id
+            })['course_term'],
+            key="course_term_semester_selectbox_add_material"
+        )
         material_type = st.selectbox(
             "Material Type",
             configs._LIBRARY_MATERIAL_TYPE_LIST
@@ -251,9 +265,24 @@ with tab3:
 
             if ret_response[0]:
                 course_id_to_add = ret_course_list[course_id][0]
-                add_material(
-                    course_id_to_add, material_type, material_status, material_url,
-                    material_title, material_description, uploader_alias)
+                # add_material(
+                #     course_id_to_add, material_type, material_status, material_url,
+                #     material_title, material_description, uploader_alias)
+                course_term_string = str(course_term_semester) + " " + str(course_term_year)
+                COLLECTION_MATERIAL.insert_one({
+                    'course_id': course_id_to_add,
+                    'course_term': course_term_string,
+                    'material_type': material_type,
+                    'material_status': material_status,
+                    'material_url': material_url,
+                    'material_title': material_title,
+                    'material_description': material_description,
+                    'uploader_alias': uploader_alias,
+                    'upvote': int(0),
+                    'downvote': int(0),
+                    'datetime_added': datetime.utcnow(),
+                    'datetime_updated': datetime.utcnow()
+                })
                 st.success("Successfully added to database. Refresh to see it!", icon='✅')
             else:
                 st.error(ret_response[1], icon='🚨')
@@ -573,6 +602,20 @@ with tab1:
             key="course_selectbox_search"
         )
 
+        this_year = datetime.utcnow().year
+        course_term_year = st.selectbox(
+            "Course Term Year",
+            range(this_year, this_year - 10, -1),
+            key="course_term_year_selectbox_search"
+        )
+
+        course_term_semester = st.selectbox(
+            "Course Term Semester",
+            COLLECTION_SCHOOL.find_one({
+                '_id': school_obj_id
+            })['course_term']
+        )
+
         material_type_list = st.multiselect(
             "Material Type",
             configs._LIBRARY_MATERIAL_TYPE_LIST
@@ -622,6 +665,9 @@ with tab1:
                 )
 
             and_query_logic.append({'course_id': course_obj_id})
+            # TODO: check to see if additional conditional logic is needed
+            course_term_filter = str(course_term_semester) + " " + str(course_term_year)
+            and_query_logic.append({'course_term': course_term_filter})
             ret_materials_cursor = COLLECTION_MATERIAL.find(
                     {"$and":
                         and_query_logic
