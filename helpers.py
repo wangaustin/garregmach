@@ -10,7 +10,7 @@ def check_pending_add_validity(
 
     is_valid = True
     ret_msg = '''
-    ERROR! Not submitted due to the following reason(s): \n
+    ERROR! Material was not added due to the following reason(s): \n
     '''
     if school is None:
         is_valid = False
@@ -79,6 +79,8 @@ def format_material_doc(
         st.write(doc['material_status'])
         st.caption('Uploader Alias')
         st.write(doc['uploader_alias'])
+        st.caption('Datetime Added (UTC)')
+        st.write(doc['datetime_added'])
         st.caption('Material URL')
         st.write(make_clickable_link(doc['material_url'], doc['material_type']))
 

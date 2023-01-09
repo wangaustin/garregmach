@@ -5,10 +5,13 @@ import pymongo
 from pymongo import MongoClient
 import configs
 
+## at a minimum, the database needs to be prepopulated with at least
+## one school, one department related to that school, and one professor
+## related to that department
+
 # import helper functions ../helpers.py
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 import helpers
 
 
@@ -97,17 +100,19 @@ tab1, tab2, tab3, tab4 = st.tabs(configs._LIBRARY_TAB_NAMES)
 with tab2:
     st.header("Recently Added")
     # for doc in COLLECTION_MATERIAL.find().limit(10):
-    #     st.write(doc)
 
-    for doc in COLLECTION_MATERIAL.find().limit(10):
-        helpers.format_material_doc(
-            doc,
-            COLLECTION_COURSE,
-            COLLECTION_DEPARTMENT,
-            COLLECTION_SCHOOL,
-            COLLECTION_PROFESSOR,
-            "add"
-        )
+    if COLLECTION_MATERIAL.count_documents({}) > 0:
+        for doc in COLLECTION_MATERIAL.find().limit(10):
+            helpers.format_material_doc(
+                doc,
+                COLLECTION_COURSE,
+                COLLECTION_DEPARTMENT,
+                COLLECTION_SCHOOL,
+                COLLECTION_PROFESSOR,
+                "add"
+            )
+    else:
+        st.error("Database does not have any materials!", icon='🚨')
 
 
 
@@ -162,6 +167,11 @@ with tab3:
         # -----------------------------
         department_obj_id = ret_department_list[department][0]
         ret_professor_list = find_all_professors_for_department(department_obj_id)
+        if len(ret_professor_list) == 0:
+            st.error(
+                "No professor has been added to this department! Please refresh and add a professor first.",
+                icon='🚨')
+            st.stop()
         # compile professor list for display
         professor_list_for_display = []
         for professor in ret_professor_list:
@@ -216,7 +226,7 @@ with tab3:
         # -----------------------------
         material_title = st.text_input(
             "Material Title",
-            placeholder="To Save a Mockingbird"
+            placeholder="Critique of Pure Reason"
         )
 
         # ------ MATERIAL DESCRIPTION
@@ -234,7 +244,7 @@ with tab3:
         )
 
 
-        if st.button("Submit"):
+        if st.button("Add Material"):
             def check_data_validity():
                 # TODO: add validity logic, currently it's just dummy
                 return False
@@ -258,7 +268,8 @@ with tab3:
                     'uploader_alias': uploader_alias,
                     'upvote': int(0),
                     'downvote': int(0),
-                    'datetime_added': datetime.utcnow()
+                    'datetime_added': datetime.utcnow(),
+                    'datetime_updated': datetime.utcnow()
                 })
 
             if ret_message[0]:
@@ -311,7 +322,9 @@ with tab3:
                     'name': name.title(),
                     'school': school_obj_id,
                     'website_url': website_url,
-                    'abbreviation': abbreviation
+                    'abbreviation': abbreviation,
+                    'datetime_added': datetime.utcnow(),
+                    'datetime_updated': datetime.utcnow()
                 })
                 st.success("Successfully added department. Refresh to see it!", icon="✅")
     
@@ -396,7 +409,9 @@ with tab3:
                     'department': department_obj_id,
                     'professor': professor_obj_id,
                     'level': level,
-                    'name': name.title()
+                    'name': name.title(),
+                    'datetime_added': datetime.utcnow(),
+                    'datetime_updated': datetime.utcnow()
                 })
 
                 COLLECTION_PROFESSOR.find_one_and_update(
@@ -481,12 +496,14 @@ with tab3:
                     'first_name': first_name.title(),
                     'last_name': last_name.title(),
                     'department': department_obj_id,
-                    'courses': []
+                    'courses': [],
+                    'datetime_added': datetime.utcnow(),
+                    'datetime_updated': datetime.utcnow()
                 })
                 st.success("Successfully added professor to database. Refresh to see it!", icon='✅')
 
     with add_subtab5:
-        st.info("Adding a school requires a moderator. Please email the following information.", icon='📧')
+        st.info(configs._LIBRARY_ADD_SCHOOL_INFO, icon='📧')
 
 
 with tab1:
@@ -566,13 +583,13 @@ with tab1:
 
         material_title = st.text_input(
             "Material Title",
-            placeholder="To Save a Mockingbird",
+            placeholder="Critique of Pure Reason",
             key="material_title_text_input_search"
         )
 
         if st.button("Find Materials"):
             if course_id is None:
-                st.error("Must select a course!", icon="🚨")
+                st.error("Must select a course! If there is no course to select, please refresh and add one first.", icon="🚨")
                 st.stop()
             st.subheader("Search Results")
             course_obj_id = ret_course_list[course_id][0]
