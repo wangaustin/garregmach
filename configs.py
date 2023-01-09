@@ -62,7 +62,7 @@ one step at a time.
 _MAIN_LIBRARY_INTRO = """
     #### Intro
     \nThe GMP Library is a platform to share where you can find materials for a specific 
-    course and find materials already shared by your others.  
+    course and find materials already shared by others.  
     \nThe purpose of this platform is to allow those of us who are good at finding
     where digital resources are located at to help others who are not.\
     \n#### Example
