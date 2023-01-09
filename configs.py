@@ -62,15 +62,27 @@ one step at a time.
 _MAIN_LIBRARY_INTRO = """
     #### Intro
     \nThe GMP Library is a platform to share where you can find materials for a specific 
-    course and find materials already shared by others.  
-    \nThe purpose of this platform is to allow those of us who are good at finding
-    where digital resources are located at to help others who are not.\
+    course and find materials already shared by others.
+    \nThe goal of the GMP Library is for students who are good at finding the locations 
+    of digital resources to help those who are not. This way, students will hopefully 
+    reduce the amount of money needed to spend on physical copies of the academic resources 
+    simply because they could not find them online.
     \n#### Example
     \nSuppose Tintin knows URL link of where to find the PDF for *Critique of Pure Reason*, 
     which is a book requested by a Philosophy course. 
     \nTintin can upload the link as follows for everyone else to see: 
     \n> **Library ➡️ Add to Database ➡️ Add Material**
     \nTintin is now a hero for sharing!
+    \n#### Isn't This LibGen? What's So Different about GMP Library?
+    \nLibGen is absolutely awesome! However, it can get a bit difficult to find what you 
+    need there for a particular course.
+    \nThe GMP Library asks people to add links to academic resources in association with a 
+    particular course. This mandatory association is what sets it apart from other resource 
+    sharing websites such as libgen, as it allows the system to easily filter queries.
+    \nSo, if I only want to see the resources for the Modern Philosophy course at
+    Vanderbilt University taught my Dr. Wuerth, for instance, the system can efficiently 
+    query that. The association also adds another layer of filter as it has presumably been 
+    deemed related to this course by the original uploader. 
     \n#### Ready to Search or Contribute?
     \nHead to 📚 [Library](/Library) now!
     """

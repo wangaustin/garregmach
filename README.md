@@ -5,7 +5,7 @@ An open-source project with the goal of reducing costs associated with higher ed
 ### 📚 Library
 #### Intro
 The GMP Library is a platform to share where you can find materials for a specific 
-course and find materials already shared by your others.  
+course and find materials already shared by others.  
 
 The purpose of this platform is to allow those of us who are good at finding
 where digital resources are located at to help others who are not
