@@ -114,8 +114,8 @@ with tab2:
 with tab3:
     st.header("Add to Database")
 
-    add_subtab1, add_subtab2, add_subtab3, add_subtab4 = st.tabs([
-        "Add Material", "Add Department", "Add Course", "Add Professor"
+    add_subtab1, add_subtab2, add_subtab3, add_subtab4, add_subtab5 = st.tabs([
+        "Add Material", "Add Department", "Add Course", "Add Professor", "Add School"
     ])
 
     with add_subtab1:
@@ -315,6 +315,9 @@ with tab3:
                 })
                 st.success("Successfully added department. Refresh to see it!", icon="✅")
     
+    # -------------------
+    # ADD COURSE
+    # -------------------
     with add_subtab3:
         # ----- SCHOOL -----
         school = st.selectbox(
@@ -376,6 +379,7 @@ with tab3:
             key="level_selectbox_add_course"
         )
 
+        # TODO: add validation and error messaging
         if st.button("Add Course", key="submit_button_add_course"):
             existing_course = COLLECTION_COURSE.find_one({
                 'course_id': course_id.upper(),
@@ -387,16 +391,24 @@ with tab3:
                 st.error("This course already exists. Please refresh page and try again.", icon="🚨")
                 st.stop()
             else:
-                COLLECTION_COURSE.insert_one({
+                inserted_course = COLLECTION_COURSE.insert_one({
                     'course_id': course_id.upper(),
                     'department': department_obj_id,
                     'professor': professor_obj_id,
                     'level': level,
                     'name': name.title()
                 })
+
+                COLLECTION_PROFESSOR.find_one_and_update(
+                    {'_id': professor_obj_id},
+                    {'$push': {'courses': inserted_course.inserted_id}}
+                )
+
+                professor_to_update = COLLECTION_PROFESSOR.find_one({
+                    '_id': professor_obj_id
+                })
+
                 st.success("Successfully added course to database. Refresh to see it!", icon="✅")
-
-
 
     with add_subtab4:
         # ------ SCHOOL
@@ -472,6 +484,9 @@ with tab3:
                     'courses': []
                 })
                 st.success("Successfully added professor to database. Refresh to see it!", icon='✅')
+
+    with add_subtab5:
+        st.info("Adding a school requires a moderator. Please email the following information.", icon='📧')
 
 
 with tab1:
