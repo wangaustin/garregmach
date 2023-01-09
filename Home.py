@@ -11,7 +11,7 @@ st.markdown(configs.hide_streamlit_style, unsafe_allow_html=True)
 st.header("Welcome to Garreg Mach Project!")
 st.caption(configs._MAIN_GMP_PROJECT_INTRO)
 
-st.subheader("Current Platforms")
+st.subheader("🤩 Current Platforms")
 
 with st.expander("📚 Library", expanded=True):
     st.write(configs._MAIN_LIBRARY_INTRO)

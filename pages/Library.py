@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd
 from datetime import date, datetime
 import pymongo
 from pymongo import MongoClient
@@ -671,4 +670,7 @@ with tab1:
 
 with tab4:
     st.header("More")
+    st.subheader("💬 Have a Suggestion for Library?")
+    st.write("Create an issue at [GMP's Github repo](https://github.com/wangaustin/garregmach)!")
+    st.write("Alternatively, email your suggestion to [garregmachproject@gmail.com](mailto:garregmachproject@gmail.com).")
 
