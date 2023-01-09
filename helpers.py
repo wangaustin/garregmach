@@ -71,6 +71,56 @@ def check_department_pending_add_validity(
 
     return [is_valid, ret_msg]
 
+def check_course_pending_add_validity(
+    school, department, professor, name, course_id, level):
+    is_valid = True
+
+    ret_msg = '''
+    ERROR! Course was not added due to the following reason(s): \n
+    '''
+    if school is None:
+        is_valid = False
+        ret_msg += '''\n- \"School\" is not selected'''
+    if department is None:
+        is_valid = False
+        ret_msg += '''\n- \"Department\" is not selected'''
+    if professor is None:
+        is_valid = False
+        ret_msg += '''\n- \"Professor\" is not selected'''       
+    if len(name) == 0:
+        is_valid = False
+        ret_msg += '''\n- \"Course Name\" is empty'''
+    if len(course_id) == 0:
+        is_valid = False
+        ret_msg += '''\n- \"Course ID\" is empty'''
+    if len(level) is None:
+        is_valid = False
+        ret_msg += '''\n- \"Course Level\" is not selected'''
+
+    return [is_valid, ret_msg]
+
+def check_professor_pending_add_validity(
+    school, department, first_name, last_name):
+    is_valid = True
+
+    ret_msg = '''
+    ERROR! Course was not added due to the following reason(s): \n
+    '''
+    if school is None:
+        is_valid = False
+        ret_msg += '''\n- \"School\" is not selected'''
+    if department is None:
+        is_valid = False
+        ret_msg += '''\n- \"Department\" is not selected'''
+    if len(first_name) == 0:
+        is_valid = False
+        ret_msg += '''\n- \"First Name\" is empty'''       
+    if len(last_name) == 0:
+        is_valid = False
+        ret_msg += '''\n- \"Last Name\" is empty'''
+    
+    return [is_valid, ret_msg]
+
 def format_material_doc(
     doc,
     COLLECTION_COURSE,

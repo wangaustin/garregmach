@@ -27,7 +27,7 @@ Adding a school requires a moderator!
   
 Please email garregmachproject@gmail.com with the following information:  
 - School Name
-- Email Handle (e.g. vanderbilt.edu, which comes from austin.w.wang@vanderbilt.edu)
+- Email Handle (e.g. for austin.w.wang@vanderbilt.edu, the email handle would be "vanderbilt.edu")
 - Logo URL (or a link to where to find the logo)
 - Website URL (e.g. www.vanderbilt.edu)
 """

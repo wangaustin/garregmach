@@ -269,10 +269,12 @@ with tab3:
         )
         name = st.text_input(
             "Department Name",
+            placeholder="Philosophy",
             key="name_text_input_add_department"
         )
         website_url = st.text_input(
             "Department Website URL",
+            placeholder="https://www.austinwang.co",
             key="website_url_text_input_add_department"
         )
         abbreviation = st.text_input(
@@ -390,27 +392,34 @@ with tab3:
                 st.error("This course already exists. Please refresh page and try again.", icon="🚨")
                 st.stop()
             else:
-                inserted_course = COLLECTION_COURSE.insert_one({
-                    'course_id': course_id.upper(),
-                    'department': department_obj_id,
-                    'professor': professor_obj_id,
-                    'level': level,
-                    'name': name.title(),
-                    'datetime_added': datetime.utcnow(),
-                    'datetime_updated': datetime.utcnow()
-                })
-
-                COLLECTION_PROFESSOR.find_one_and_update(
-                    {'_id': professor_obj_id},
-                    {'$push': {'courses': inserted_course.inserted_id}}
+                ret_response = helpers.check_course_pending_add_validity(
+                    school, department, professor, name, course_id, level
                 )
+                if ret_response[0]:
+                    inserted_course = COLLECTION_COURSE.insert_one({
+                        'course_id': course_id.upper(),
+                        'department': department_obj_id,
+                        'professor': professor_obj_id,
+                        'level': level,
+                        'name': name.title(),
+                        'datetime_added': datetime.utcnow(),
+                        'datetime_updated': datetime.utcnow()
+                    })
+                    # associate course with professor
+                    COLLECTION_PROFESSOR.find_one_and_update(
+                        {'_id': professor_obj_id},
+                        {'$push': {'courses': inserted_course.inserted_id}}
+                    )
 
-                professor_to_update = COLLECTION_PROFESSOR.find_one({
-                    '_id': professor_obj_id
-                })
+                    professor_to_update = COLLECTION_PROFESSOR.find_one({
+                        '_id': professor_obj_id
+                    })
 
-                st.success("Successfully added course to database. Refresh to see it!", icon="✅")
+                    st.success("Successfully added course to database. Refresh to see it!", icon="✅")
+                else:
+                    st.error(ret_response[1], icon='🚨')
 
+    ## ADD PROFESSOR
     with add_subtab4:
         # ------ SCHOOL
         # -----------------------------
@@ -455,10 +464,12 @@ with tab3:
 
         first_name = st.text_input(
             "First Name",
+            placeholder="Cornelius",
             key="first_name_text_input_add_professor"
         )
         last_name = st.text_input(
             "Last Name",
+            placeholder="Vanderbilt",
             key="last_name_text_input_add_professor"
         )
 
@@ -478,15 +489,21 @@ with tab3:
                     icon='🚨')
                 st.stop()
             else:
-                COLLECTION_PROFESSOR.insert_one({
-                    'first_name': first_name.title(),
-                    'last_name': last_name.title(),
-                    'department': department_obj_id,
-                    'courses': [],
-                    'datetime_added': datetime.utcnow(),
-                    'datetime_updated': datetime.utcnow()
-                })
-                st.success("Successfully added professor to database. Refresh to see it!", icon='✅')
+                ret_response = helpers.check_professor_pending_add_validity(
+                    school, department, first_name, last_name
+                )
+                if ret_response[0]:
+                    COLLECTION_PROFESSOR.insert_one({
+                        'first_name': first_name.title(),
+                        'last_name': last_name.title(),
+                        'department': department_obj_id,
+                        'courses': [],
+                        'datetime_added': datetime.utcnow(),
+                        'datetime_updated': datetime.utcnow()
+                    })
+                    st.success("Successfully added professor to database. Refresh to see it!", icon='✅')
+                else:
+                    st.error(ret_response[1], icon='🚨')
 
     with add_subtab5:
         st.info(configs._LIBRARY_ADD_SCHOOL_INFO, icon='📧')
