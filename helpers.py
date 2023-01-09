@@ -3,7 +3,7 @@ import streamlit as st
 # @param: all the fields in the add form
 # @return: error message if applicable
 # """
-def check_pending_add_validity(
+def check_material_pending_add_validity(
     school, department, professor, course_id,
     material_type, material_status, material_url,
     material_title, material_description, uploader_alias):
@@ -33,6 +33,9 @@ def check_pending_add_validity(
     if len(material_url) == 0:
         is_valid = False
         ret_msg += '''\n- \"Material URL\" is empty'''
+    if not material_url.startswith("http"):
+        is_valid = False
+        ret_msg += '''\n- \"Material URL\" does not start with http'''
     if len(material_title) == 0:
         is_valid = False
         ret_msg += '''\n- \"Material Title\" is empty'''
@@ -43,6 +46,30 @@ def check_pending_add_validity(
         # ret_msg += '''\n- Uploader Alias has not been entered'''
     return [is_valid, ret_msg]
 
+def check_department_pending_add_validity(
+    school, name, website_url, abbreviation):
+    is_valid = True
+
+    ret_msg = '''
+    ERROR! Department was not added due to the following reason(s): \n
+    '''
+    if school is None:
+        is_valid = False
+        ret_msg += '''\n- \"School\" is not selected'''
+    if len(name) == 0:
+        is_valid = False
+        ret_msg += '''\n- \"Name\" is empty'''
+    if len(website_url) == 0:
+        is_valid = False
+        ret_msg += '''\n- \"Website URL\" is empty'''
+    if not website_url.startswith("http"):
+        is_valid = False
+        ret_msg += '''\n- \"Website URL\" does not start with http'''
+    if len(abbreviation) == 0:
+        is_valid = False
+        ret_msg += '''\n- \"Abbreviation\" is empty'''
+
+    return [is_valid, ret_msg]
 
 def format_material_doc(
     doc,

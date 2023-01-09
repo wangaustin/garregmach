@@ -200,56 +200,34 @@ with tab3:
             range(len(course_list_for_display)),
             format_func=lambda x: course_list_for_display[x]
         )
-
-        # ------ MATERIAL TYPE
-        # -----------------------------
         material_type = st.selectbox(
             "Material Type",
             configs._LIBRARY_MATERIAL_TYPE_LIST
         )
-
-        # ------ MATERIAL STATUS
-        # -----------------------------
         material_status = st.selectbox(
             "Material Status",
             configs._LIBRARY_MATERIAL_STATUS
         )
-
-        # ------ MATERIAL URL
-        # -----------------------------
         material_url = st.text_input(
             "Material URL",
             placeholder="https://www.austinwang.co"
         )
-
-        # ------ MATERIAL DESCRIPTION
-        # -----------------------------
         material_title = st.text_input(
             "Material Title",
             placeholder="Critique of Pure Reason"
         )
-
-        # ------ MATERIAL DESCRIPTION
-        # -----------------------------
         material_description = st.text_input(
             "Material Description",
             placeholder="This is the PDF of the requested textbook."
         )
-
-        # ------ UPLOADER ALIAS
-        # -----------------------------
         uploader_alias = st.text_input(
             "Uploader Alias (Optional)",
             placeholder="anonymous"
         )
 
-
         if st.button("Add Material"):
-            def check_data_validity():
-                # TODO: add validity logic, currently it's just dummy
-                return False
 
-            ret_message = helpers.check_pending_add_validity(
+            ret_response = helpers.check_material_pending_add_validity(
                 school, department, professor, course_id,
                 material_type, material_status, material_url,
                 material_title, material_description, uploader_alias)
@@ -272,14 +250,14 @@ with tab3:
                     'datetime_updated': datetime.utcnow()
                 })
 
-            if ret_message[0]:
+            if ret_response[0]:
                 course_id_to_add = ret_course_list[course_id][0]
                 add_material(
                     course_id_to_add, material_type, material_status, material_url,
                     material_title, material_description, uploader_alias)
                 st.success("Successfully added to database. Refresh to see it!", icon='✅')
             else:
-                st.error(ret_message[1], icon='🚨')
+                st.error(ret_response[1], icon='🚨')
     
     with add_subtab2:
         # ----- SCHOOL -----
@@ -317,16 +295,24 @@ with tab3:
                 st.error("This department already exists for this school. Please refresh page and try again.", icon="🚨")
                 st.stop()
             else:
-                # TODO: add helper function to build error message
-                COLLECTION_DEPARTMENT.insert_one({
-                    'name': name.title(),
-                    'school': school_obj_id,
-                    'website_url': website_url,
-                    'abbreviation': abbreviation,
-                    'datetime_added': datetime.utcnow(),
-                    'datetime_updated': datetime.utcnow()
-                })
-                st.success("Successfully added department. Refresh to see it!", icon="✅")
+                ret_response = helpers.check_department_pending_add_validity(
+                    school, name, website_url, abbreviation
+                )
+
+                if ret_response[0]:
+                    # TODO: add helper function to build error message
+                    COLLECTION_DEPARTMENT.insert_one({
+                        'name': name.title(),
+                        'school': school_obj_id,
+                        'website_url': website_url,
+                        'abbreviation': abbreviation,
+                        'datetime_added': datetime.utcnow(),
+                        'datetime_updated': datetime.utcnow()
+                    })
+                    st.success("Successfully added department. Refresh to see it!", icon="✅")
+                else:
+                    st.error(ret_response[1], icon='🚨')
+
     
     # -------------------
     # ADD COURSE
