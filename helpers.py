@@ -156,6 +156,8 @@ def format_material_doc(
         st.write(doc['course_term_semester'] + ' ' + str(doc['course_term_year']))
         st.caption('Material Status')
         st.write(doc['material_status'])
+        st.caption('Material Description')
+        st.write(doc['material_description'])
         st.caption('Uploader Alias')
         st.write(doc['uploader_alias'])
         st.caption('Datetime Added (UTC)')

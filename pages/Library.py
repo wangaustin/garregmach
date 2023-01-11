@@ -14,11 +14,13 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import helpers
 
 
+
 # set configs
 st.set_page_config(
     page_title = "Garreg Mach · Library",
     page_icon = "📚"
 )
+
 
 st.markdown(configs.hide_streamlit_style, unsafe_allow_html=True)
 
@@ -223,19 +225,19 @@ with tab3:
         )
         material_url = st.text_input(
             "Material URL",
-            placeholder="https://www.austinwang.co"
+            placeholder=configs._PLACEHOLDER_WEBSITE
         )
         material_title = st.text_input(
             "Material Title",
-            placeholder="Critique of Pure Reason"
+            placeholder=configs._PLACEHOLDER_MATERIAL_TITLE
         )
         material_description = st.text_input(
             "Material Description",
-            placeholder="This is the PDF of the requested textbook."
+            placeholder=configs._PLACEHOLDER_MATERIAL_DESCRIPTION
         )
         uploader_alias = st.text_input(
             "Uploader Alias (Optional)",
-            placeholder="anonymous"
+            placeholder=configs._PLACEHOLDER_UPLOADER_ALIAS
         )
 
         if st.button("Add Material"):
@@ -281,7 +283,7 @@ with tab3:
         )
         website_url = st.text_input(
             "Department Website URL",
-            placeholder="https://www.austinwang.co",
+            placeholder=configs._PLACEHOLDER_WEBSITE,
             key="website_url_text_input_add_department"
         )
         abbreviation = st.text_input(
@@ -607,7 +609,7 @@ with tab1:
 
         material_title = st.text_input(
             "Material Title (Optional)",
-            placeholder="Critique of Pure Reason",
+            placeholder=configs._PLACEHOLDER_MATERIAL_TITLE,
             key="material_title_text_input_search"
         )
 
@@ -684,9 +686,28 @@ with tab1:
             placeholder="tintinisagoodboi",
             key="uploader_alias_text_input_search"
         )
+        is_precise_search = st.checkbox("Precise Search")
+        # TODO: implement include substring
+        # is_substring_ok = st.checkbox("Include Alias as Substring")
+
         if st.button("Find Materials", key="search_by_uploader_alias_button"):
             st.subheader("Search Results")
-            ret_materials_cursor = COLLECTION_MATERIAL.find({'uploader_alias': uploader_alias})
+            if is_precise_search:
+                ret_materials_cursor = COLLECTION_MATERIAL.find({'uploader_alias': uploader_alias})
+            else:
+                ret_materials_cursor = COLLECTION_MATERIAL.find({
+                    'uploader_alias': { "$regex" : uploader_alias , "$options" : "i"}
+                })
+
+            cursor_length = len(list(ret_materials_cursor.clone()))
+
+            if (cursor_length == 0):
+                st.error("No materials found.", icon="📭")
+            else:
+                info_msg = "Found " + str(cursor_length) + " result(s)!"
+                st.info(info_msg, icon="📬")
+            
+            # print formatted material docs
             for doc in ret_materials_cursor:
                 helpers.format_material_doc(
                     doc,
@@ -697,8 +718,6 @@ with tab1:
                     "search"
                 )
 
-            
-
 
 
 with tab4:
@@ -706,4 +725,3 @@ with tab4:
     st.subheader("💬 Have a Suggestion for Library?")
     st.write("Create an issue at [GMP's Github repo](https://github.com/wangaustin/garregmach)!")
     st.write("Alternatively, email your suggestion to [garregmachproject@gmail.com](mailto:garregmachproject@gmail.com).")
-

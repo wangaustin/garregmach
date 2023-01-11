@@ -2,6 +2,11 @@ import streamlit as st
 import pymongo
 from pymongo import MongoClient
 
+_PLACEHOLDER_WEBSITE = "https://www.austinwang.co"
+_PLACEHOLDER_MATERIAL_TITLE = "Critique of Pure Reason"
+_PLACEHOLDER_MATERIAL_DESCRIPTION = "This is the PDF of the requested textbook."
+_PLACEHOLDER_UPLOADER_ALIAS = "anonymous"
+
 _LIBRARY_TAB_NAMES = [
     "🔍 Search",
     "🆕 Recently Added",
@@ -31,7 +36,6 @@ _LIBRARY_ADD_SCHOOL_INFO = """
     - Website URL (e.g. www.vanderbilt.edu)
     - Course Term (a list of course terms for your school; e.g. for Vanderbilt, it is "Spring, Summer, Fall, Winter, Maymester")
 """
-
 
 # hide "made with streamlit" and upper right hamburger
 hide_streamlit_style = """
@@ -65,8 +69,8 @@ _MAIN_LIBRARY_INTRO = """
     course and find materials already shared by others.
     \nThe goal of the GMP Library is for students who are good at finding the locations 
     of digital resources to help those who are not. This way, students will hopefully 
-    reduce the amount of money needed to spend on physical copies of the academic resources 
-    simply because they could not find them online.
+    need to spend less money on physical copies of the academic resources simply because 
+    they could not find them online.
     \nNote that the GMP Library database does not store any files at all. It is purely a 
     repository of links.
     \n#### Example

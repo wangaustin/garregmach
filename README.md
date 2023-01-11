@@ -6,7 +6,7 @@ An open-source project with the goal of reducing costs associated with higher ed
 #### Intro
 The GMP Library is a platform to share where you can find materials for a specific course and find materials already shared by others.
 
-The goal of the GMP Library is for students who are good at finding the locations of digital resources to help those who are not. This way, students will hopefully reduce the amount of money needed to spend on physical copies of the academic resources simply because they could not find them online.
+The goal of the GMP Library is for students who are good at finding the locations of digital resources to help those who are not. The goal of the GMP Library is for students who are good at finding the locations of digital resources to help those who are not. This way, students will hopefully need to spend less money on physical copies of the academic resources simply because they could not find them online.
 
 Note that the GMP Library database does not store any files at all. It is purely a repository of links.
 #### Example
