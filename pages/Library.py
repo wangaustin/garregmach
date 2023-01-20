@@ -30,7 +30,7 @@ st.title("📚 Library")
 
 client = configs.init_connection()
 
-DATABASE = client.LibraryDB
+DATABASE = client.GarregMachDB
 COLLECTION_COURSE = DATABASE.Course
 COLLECTION_DEPARTMENT = DATABASE.Department
 COLLECTION_SCHOOL = DATABASE.School
