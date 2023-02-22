@@ -21,7 +21,6 @@ st.set_page_config(
     page_icon = "📚"
 )
 
-
 st.markdown(configs.hide_streamlit_style, unsafe_allow_html=True)
 
 configs.setup_library_header()
@@ -100,10 +99,9 @@ tab1, tab2, tab3, tab4 = st.tabs(configs._LIBRARY_TAB_NAMES)
 # TODO: switch order of 'recently added' and 'add to database'
 with tab2:
     st.header("Recently Added")
-    # for doc in COLLECTION_MATERIAL.find().limit(10):
 
     if COLLECTION_MATERIAL.count_documents({}) > 0:
-        for doc in COLLECTION_MATERIAL.find().limit(10):
+        for doc in COLLECTION_MATERIAL.find().sort('datetime_added',-1).limit(10):
             helpers.format_material_doc(
                 doc,
                 COLLECTION_COURSE,
@@ -484,7 +482,6 @@ with tab3:
 
         department_obj_id = ret_department_list[department][0]
 
-        # TODO: add helper function for validation and error messaging
         if st.button("Add Professor", key="submit_button_add_professor"):
             existing_professor = COLLECTION_PROFESSOR.find_one({
                 'department': department_obj_id,
@@ -613,6 +610,38 @@ with tab1:
             key="material_title_text_input_search"
         )
 
+        # find_filter_col1, find_filter_col2, find_filter_col3 = st.columns(3)
+
+        material_sort_method = st.selectbox(
+            "Sort Method (Optional)",
+            [
+                "Sort by Later Date",
+                "Sort by Earlier Date",
+                "Sort by Title (A-Z)",
+                "Sort by Title (Z-A)"
+            ]
+        )
+
+
+        # # sort filter - earlier date first
+        # material_filter_sort_earlier_date = find_filter_col1.checkbox(
+        #     "Sort by Earlier Date",
+        #     value=False,
+        #     key="material_filter_sort_earlier_date_checkbox"
+        # )
+
+        # material_filter_sort_alphabetical_a_z = find_filter_col2.checkbox(
+        #     "Sort by Title (A-Z)",
+        #     value=False,
+        #     key="material_filter_sort_alphabetical_a_z_checkbox"
+        # )
+
+        # material_filter_sort_alphabetical_z_a = find_filter_col3.checkbox(
+        #     "Sort by Title (Z-A)",
+        #     value=False,
+        #     key="material_filter_sort_alphabetical_z_a_checkbox"
+        # )
+
         if st.button("Find Materials"):
             if course_id is None:
                 st.error("Must select a course! If there is no course to select, please refresh and add one first.", icon="🚨")
@@ -657,11 +686,24 @@ with tab1:
                     }}
                 )
 
+
             and_query_logic.append({'course_id': course_obj_id})
 
             ret_materials_cursor = COLLECTION_MATERIAL.find(
                     {"$and": and_query_logic}
                 )
+
+            # sorts
+            if material_sort_method == "Sort by Later Date":
+                ret_materials_cursor = ret_materials_cursor.sort('datetime_added', 1)
+            if material_sort_method == "Sort by Later Date":
+                ret_materials_cursor = ret_materials_cursor.sort('datetime_added', -1)
+            if material_sort_method == "Sort by Title (A-Z)":
+                ret_materials_cursor = ret_materials_cursor.sort('material_title', 1)
+            if material_sort_method == "Sort by Title (Z-A)":
+                ret_materials_cursor = ret_materials_cursor.sort('material_title', -1)
+
+
             cursor_length = len(list(ret_materials_cursor.clone()))
 
             if cursor_length > 0:
@@ -688,7 +730,7 @@ with tab1:
         )
         is_precise_search = st.checkbox("Precise Search")
         # TODO: implement include substring
-        # is_substring_ok = st.checkbox("Include Alias as Substring")
+        is_substring_ok = st.checkbox("Include Alias as Substring")
 
         if st.button("Find Materials", key="search_by_uploader_alias_button"):
             st.subheader("Search Results")
@@ -698,6 +740,9 @@ with tab1:
                 ret_materials_cursor = COLLECTION_MATERIAL.find({
                     'uploader_alias': { "$regex" : uploader_alias , "$options" : "i"}
                 })
+            
+            if is_substring_ok:
+                ret_materials_cursor = ret_materials_cursor.find({})
 
             cursor_length = len(list(ret_materials_cursor.clone()))
 
@@ -719,9 +764,12 @@ with tab1:
                 )
 
 
-
 with tab4:
-    st.header("More")
-    st.subheader("💬 Have a Suggestion for Library?")
-    st.write("Create an issue at [GMP's Github repo](https://github.com/wangaustin/garregmach)!")
-    st.write("Alternatively, email your suggestion to [garregmachproject@gmail.com](mailto:garregmachproject@gmail.com).")
+    st.header("Statistics")
+    st.write("Number of all materials in database: ", COLLECTION_MATERIAL.count_documents({}))
+
+# with tab4:
+#     st.header("More")
+#     st.subheader("💬 Have a Suggestion for Library?")
+#     st.write("Create an issue at [GMP's Github repo](https://github.com/wangaustin/garregmach)!")
+#     st.write("Alternatively, email your suggestion to [garregmachproject@gmail.com](mailto:garregmachproject@gmail.com).")
