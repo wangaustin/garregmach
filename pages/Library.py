@@ -96,7 +96,6 @@ def find_all_courses(department, professor):
 # UI layout
 tab1, tab2, tab3, tab4 = st.tabs(configs._LIBRARY_TAB_NAMES)
 
-# TODO: switch order of 'recently added' and 'add to database'
 with tab2:
     st.header("Recently Added")
 
@@ -309,7 +308,6 @@ with tab3:
                 )
 
                 if ret_response[0]:
-                    # TODO: add helper function to build error message
                     COLLECTION_DEPARTMENT.insert_one({
                         'name': name.title(),
                         'school': school_obj_id,
@@ -387,7 +385,6 @@ with tab3:
             key="level_selectbox_add_course"
         )
 
-        # TODO: add validation and error messaging
         if st.button("Add Course", key="submit_button_add_course"):
             existing_course = COLLECTION_COURSE.find_one({
                 'course_id': course_id.upper(),
@@ -729,8 +726,6 @@ with tab1:
             key="uploader_alias_text_input_search"
         )
         is_precise_search = st.checkbox("Precise Search")
-        # TODO: implement include substring
-        is_substring_ok = st.checkbox("Include Alias as Substring")
 
         if st.button("Find Materials", key="search_by_uploader_alias_button"):
             st.subheader("Search Results")
@@ -740,9 +735,6 @@ with tab1:
                 ret_materials_cursor = COLLECTION_MATERIAL.find({
                     'uploader_alias': { "$regex" : uploader_alias , "$options" : "i"}
                 })
-            
-            if is_substring_ok:
-                ret_materials_cursor = ret_materials_cursor.find({})
 
             cursor_length = len(list(ret_materials_cursor.clone()))
 
