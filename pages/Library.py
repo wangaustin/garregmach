@@ -515,7 +515,7 @@ with tab3:
 with tab1:
     st.header("Search")
 
-    subtab1, subtab2 = st.tabs(['By Course', 'By Uploader Alias'])
+    subtab1, subtab2, subtab3 = st.tabs(['By Course', 'By Uploader Alias', 'List All'])
 
     with subtab1:
         # ----- SCHOOL -----
@@ -618,26 +618,6 @@ with tab1:
                 "Sort by Title (Z-A)"
             ]
         )
-
-
-        # # sort filter - earlier date first
-        # material_filter_sort_earlier_date = find_filter_col1.checkbox(
-        #     "Sort by Earlier Date",
-        #     value=False,
-        #     key="material_filter_sort_earlier_date_checkbox"
-        # )
-
-        # material_filter_sort_alphabetical_a_z = find_filter_col2.checkbox(
-        #     "Sort by Title (A-Z)",
-        #     value=False,
-        #     key="material_filter_sort_alphabetical_a_z_checkbox"
-        # )
-
-        # material_filter_sort_alphabetical_z_a = find_filter_col3.checkbox(
-        #     "Sort by Title (Z-A)",
-        #     value=False,
-        #     key="material_filter_sort_alphabetical_z_a_checkbox"
-        # )
 
         if st.button("Find Materials"):
             if course_id is None:
@@ -754,6 +734,46 @@ with tab1:
                     COLLECTION_PROFESSOR,
                     "search"
                 )
+
+        with subtab3:
+            ret_materials_cursor = COLLECTION_MATERIAL.find({})
+
+            material_sort_method = st.selectbox(
+                "Sort Method (Optional)",
+                [
+                    "Sort by Later Date",
+                    "Sort by Earlier Date",
+                    "Sort by Title (A-Z)",
+                    "Sort by Title (Z-A)"
+                ],
+                key="list_all_material_sort_method"
+            )
+
+            st.header("Results")
+
+            # sorts
+            if material_sort_method == "Sort by Later Date":
+                ret_materials_cursor = ret_materials_cursor.sort('datetime_added', 1)
+            if material_sort_method == "Sort by Later Date":
+                ret_materials_cursor = ret_materials_cursor.sort('datetime_added', -1)
+            if material_sort_method == "Sort by Title (A-Z)":
+                ret_materials_cursor = ret_materials_cursor.sort('material_title', 1)
+            if material_sort_method == "Sort by Title (Z-A)":
+                ret_materials_cursor = ret_materials_cursor.sort('material_title', -1)
+
+
+
+            # list all
+            for doc in ret_materials_cursor:
+                helpers.format_material_doc(
+                    doc,
+                    COLLECTION_COURSE,
+                    COLLECTION_DEPARTMENT,
+                    COLLECTION_SCHOOL,
+                    COLLECTION_PROFESSOR,
+                    "list_all"
+                )
+
 
 
 with tab4:
