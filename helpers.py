@@ -1,4 +1,37 @@
 import streamlit as st
+
+# import helper functions ../helpers.py
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import helpers
+import configs
+
+st.markdown(configs.hide_streamlit_style, unsafe_allow_html=True)
+
+client = configs.init_connection()
+
+DATABASE = client.GarregMachDB
+COLLECTION_COURSE = DATABASE.Course
+COLLECTION_DEPARTMENT = DATABASE.Department
+COLLECTION_SCHOOL = DATABASE.School
+COLLECTION_PROFESSOR = DATABASE.Professor
+COLLECTION_DORMITORY = DATABASE.Dormitory
+
+
+def find_all_schools():
+    school_list = []
+    for doc in COLLECTION_SCHOOL.find():
+        school_list.append([doc['_id'], doc['name']])
+    return school_list
+
+#TODO: use this instead of hard-coded list
+def find_all_dorms_for_school(school_id):
+    dorm_list = []
+    for doc in COLLECTION_DORMITORY.find({'school': school_id}):
+        dorm_list.append([doc['_id'], doc['name']])
+    return dorm_list
+
+
 # """
 # @param: all the fields in the add form
 # @return: error message if applicable

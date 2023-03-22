@@ -761,8 +761,6 @@ with tab1:
             if material_sort_method == "Sort by Title (Z-A)":
                 ret_materials_cursor = ret_materials_cursor.sort('material_title', -1)
 
-
-
             # list all
             for doc in ret_materials_cursor:
                 helpers.format_material_doc(

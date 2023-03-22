@@ -37,6 +37,34 @@ _LIBRARY_ADD_SCHOOL_INFO = """
     - Course Term (a list of course terms for your school; e.g. for Vanderbilt, it is "Spring, Summer, Fall, Winter, Maymester")
 """
 
+_DORMITORY_TAB_NAMES = [
+    "➕ Add to Database",
+    "🆕 Recently Added"
+]
+
+#TODO: remove this and use data from DB
+_DORMITORY_VANDERBILT_DORMS = [
+    "Branscomb",
+    "Carmichael Towers East",
+    "Carmichael Towers West",
+    "Chaffin",
+    "Crawford House",
+    "E. Bronson Ingram",
+    "Gillette House",
+    "Hank Ingram House",
+    "Kissam Center",
+    "Lewis House",
+    "McGill",
+    "Memorial House",
+    "Murray House",
+    "Nicholas S. Zeppos",
+    "Stambaugh House",
+    "The Martha Rivers Ingram Commons",
+    "Tolman",
+    "Warren College"
+]
+
+
 # hide "made with streamlit" and upper right hamburger
 hide_streamlit_style = """
             <style>
@@ -49,7 +77,7 @@ hide_streamlit_style = """
             """
 
 # get mongodb connection
-@st.experimental_singleton(suppress_st_warning=True)
+# @st.experimental_singleton(suppress_st_warning=True)
 def init_connection():
     return pymongo.MongoClient(st.secrets['db_connection_url'])
 
