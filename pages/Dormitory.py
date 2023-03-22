@@ -83,6 +83,7 @@ with tab1:
                     'submitted_time': utc_now
                 }
             )
+            st.success("Successfully added a new review!", icon='✅')
 
 with tab2:
     st.header("Recently Added")
