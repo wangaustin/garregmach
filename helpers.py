@@ -214,6 +214,26 @@ def format_material_doc(
             key=downvote_button_key_name):
                 st.write('Social feature is currently pending implementation!')
 
+def format_review_doc(doc):
+    # expander_name = doc[str('_id')] + ' (' +doc['dorm'] + ')'
+    # expander_name = doc[str('_id')]
+    dorm_name = COLLECTION_DORMITORY.find_one({'_id':doc['dorm']})['name']
+
+    expander_name = dorm_name + ' - ' + str(doc['review_star'])
+
+    with st.expander(expander_name):
+        st.subheader(dorm_name)
+        
+        if len(doc['uploader_alias']) > 0:
+            st.caption('uploader_alias')
+            st.write(doc['uploader_alias'])
+        st.caption('Review Star')
+        st.write(doc['review_star'])
+        st.caption('Review Comment')
+        st.write(doc['review_comment'])
+        st.caption('Submitted Time')
+        st.write(doc['submitted_time'])
+            
 
 # """
 # @param: url - url link that opens when clicked

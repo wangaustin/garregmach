@@ -27,9 +27,116 @@ COLLECTION_DORMITORY = DATABASE.Dormitory
 COLLECTION_DORMITORY_REVIEWS = DATABASE.DormitoryReviews
 
 # UI layout
-tab1, tab2 = st.tabs(configs._DORMITORY_TAB_NAMES)
+tab1, tab2, tab3 = st.tabs(configs._DORMITORY_TAB_NAMES)
 
 with tab1:
+    st.header("Search Reviews")
+
+    subtab1, subtab2 = st.tabs(['Search by School', 'Search by Dorm'])
+
+    with subtab1:
+        # ------ SCHOOL
+        # -----------------------------
+        ret_school_list = helpers.find_all_schools()
+        if len(ret_school_list) == 0:
+            st.error(
+                "No school has been added to this database! Please contact support.",
+                icon="🚨"
+            )
+            st.stop()
+        # compile school list for display
+        school_list_for_display = []
+        for school in ret_school_list:
+            school_list_for_display.append(school[1])
+        # build dropdown list
+        school = st.selectbox(
+            "School",
+            range(len(school_list_for_display)),
+            format_func=lambda x: school_list_for_display[x],
+            key='search_dorm_reviews_by_school'
+        )
+        school_obj_id = ret_school_list[school][0]
+
+        if st.button('Search by School', key='search_dorm_reviews_by_school_button'):
+            pipeline = [
+                {"$match": {"school": school_obj_id}},
+                {"$group": {"_id": None, "avg_star": {"$avg": "$review_star"}}},
+            ]
+            dorm_review_search_cursor = COLLECTION_DORMITORY_REVIEWS.aggregate(pipeline)
+            avg_star = next(dorm_review_search_cursor, {}).get("avg_star")
+
+            st.subheader('Result(s)')
+            st.caption('Average Star')
+            st.write(avg_star)
+
+            for doc in COLLECTION_DORMITORY_REVIEWS.find({'school':school_obj_id}):
+                helpers.format_review_doc(doc)
+
+    with subtab2:
+        # ------ SCHOOL
+        # -----------------------------
+        ret_school_list = helpers.find_all_schools()
+        if len(ret_school_list) == 0:
+            st.error(
+                "No school has been added to this database! Please contact support.",
+                icon="🚨"
+            )
+            st.stop()
+        # compile school list for display
+        school_list_for_display = []
+        for school in ret_school_list:
+            school_list_for_display.append(school[1])
+        # build dropdown list
+        school = st.selectbox(
+            "School",
+            range(len(school_list_for_display)),
+            format_func=lambda x: school_list_for_display[x]
+        )
+
+        # ------ DORM
+        # -----------------------------
+        school_obj_id = ret_school_list[school][0]
+        ret_dorm_list = helpers.find_all_dorms_for_school(school_obj_id)
+        if len(ret_dorm_list) == 0:
+            st.error("No dorm has been added for this school! Please contact support.", icon="🚨")
+            st.stop()
+        # compile department list for display
+        dorm_list_for_display = []
+        for dorm in ret_dorm_list:
+            dorm_list_for_display.append(dorm[1])
+        
+        # build dropdown list
+        dorm = st.selectbox(
+            "Dorm",
+            range(len(dorm_list_for_display)),
+            format_func=lambda x: dorm_list_for_display[x],
+            key='search_dorm_reviews_by_dorm'
+        )
+
+        dorm_obj_id = ret_dorm_list[dorm][0]
+
+        if st.button('Search Dorm', key='search_dorm_reviews_by_dorm_button'):
+            st.subheader('Result(s)')
+
+            pipeline = [
+                {"$match": {"school": school_obj_id, "dorm": dorm_obj_id}},
+                {"$group": {"_id": None, "avg_star": {"$avg": "$review_star"}}},
+            ]
+            dorm_review_search_cursor = COLLECTION_DORMITORY_REVIEWS.aggregate(pipeline)
+            avg_star = next(dorm_review_search_cursor, {}).get("avg_star")
+
+            st.caption('Average Star')
+            st.write(avg_star)
+
+            for doc in COLLECTION_DORMITORY_REVIEWS.find({'school': school_obj_id, 'dorm': dorm_obj_id}):
+                helpers.format_review_doc(doc)
+
+
+
+    
+
+with tab2:
+    st.header("Add to Database")
     with st.form('new_dorm_review'):
         
         ret_school_list = helpers.find_all_schools()
@@ -51,12 +158,23 @@ with tab1:
             format_func=lambda x: school_list_for_display[x]
         )
 
-        # TODO: use data from DB
-        # compile dorm list for this school
-
+        # ------ DORM
+        # -----------------------------
+        school_obj_id = ret_school_list[school][0]
+        ret_dorm_list = helpers.find_all_dorms_for_school(school_obj_id)
+        if len(ret_dorm_list) == 0:
+            st.error("No dorm has been added for this school! Please contact support.", icon="🚨")
+            st.stop()
+        # compile department list for display
+        dorm_list_for_display = []
+        for dorm in ret_dorm_list:
+            dorm_list_for_display.append(dorm[1])
+        
+        # build dropdown list
         dorm = st.selectbox(
             "Dorm",
-            configs._DORMITORY_VANDERBILT_DORMS
+            range(len(dorm_list_for_display)),
+            format_func=lambda x: dorm_list_for_display[x]
         )
 
         review_star = st.slider("Review (1-5)", min_value=1, max_value=5, value=3)
@@ -85,25 +203,11 @@ with tab1:
             )
             st.success("Successfully added a new review!", icon='✅')
 
-with tab2:
+with tab3:
     st.header("Recently Added")
 
     # get dataframe
     dorm_review_cursor = COLLECTION_DORMITORY_REVIEWS.find().sort("submitted_time", 1)
-    dorm_review_df = pd.DataFrame(list(dorm_review_cursor.clone()))
 
-    cols = dorm_review_df.columns.tolist()
-
-    dorm_review_df = dorm_review_df.drop('_id',axis=1)
-    
-    # # move 'codename' to the front of the df
-    # cols = cols[-2:] + cols[:-2]
-    # dorm_review_df = dorm_review_df[cols]
-
-    i = 0
     for doc in dorm_review_cursor:
-        # dorm_review_df.at[i, '_id'] = str(dorm_review_df.at[i, '_id'])
-        dorm_review_df.at[i, 'school'] = COLLECTION_SCHOOL.find_one({'_id': dorm_review_df.at[i, 'school']})['name']
-        i += 1
-
-    st.dataframe(dorm_review_df, use_container_width=True)
+        helpers.format_review_doc(doc)

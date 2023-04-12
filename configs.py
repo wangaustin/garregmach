@@ -39,6 +39,7 @@ _LIBRARY_ADD_SCHOOL_INFO = """
 
 _DORMITORY_TAB_NAMES = [
     "➕ Add to Database",
+    "🔍 Search Reviews",
     "🆕 Recently Added"
 ]
 

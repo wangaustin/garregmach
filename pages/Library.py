@@ -149,7 +149,7 @@ with tab3:
         if len(ret_department_list) == 0:
             st.error("No deparment has been added for this school! Please contact support.", icon="🚨")
             st.stop()
-        # compile department list for siplay
+        # compile department list for display
         department_list_for_display = []
         for department in ret_department_list:
             department_list_for_display.append(department[1])
