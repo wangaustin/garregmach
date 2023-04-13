@@ -217,7 +217,9 @@ def format_material_doc(
 def format_review_doc(doc):
     # expander_name = doc[str('_id')] + ' (' +doc['dorm'] + ')'
     # expander_name = doc[str('_id')]
-    dorm_name = COLLECTION_DORMITORY.find_one({'_id':doc['dorm']})['name']
+    dorm_name = COLLECTION_DORMITORY.find_one({'_id':doc['dorm']})
+    if dorm_name is not None:
+        dorm_name = dorm_name['name']
 
     expander_name = dorm_name + ' - ' + str(doc['review_star'])
 

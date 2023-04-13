@@ -123,6 +123,7 @@ with tab1:
                 {"$group": {"_id": None, "avg_star": {"$avg": "$review_star"}}},
             ]
             dorm_review_search_cursor = COLLECTION_DORMITORY_REVIEWS.aggregate(pipeline)
+
             avg_star = next(dorm_review_search_cursor, {}).get("avg_star")
 
             st.caption('Average Star')
@@ -176,6 +177,7 @@ with tab2:
             range(len(dorm_list_for_display)),
             format_func=lambda x: dorm_list_for_display[x]
         )
+        dorm_obj_id = ret_dorm_list[dorm][0]
 
         review_star = st.slider("Review (1-5)", min_value=1, max_value=5, value=3)
         review_comment = st.text_area("Review Comment")
@@ -194,7 +196,7 @@ with tab2:
                 {
                     'school': school_id_to_add,
                     #TODO: use data from DB instead of hard-coded list
-                    'dorm': dorm,
+                    'dorm': dorm_obj_id,
                     'review_star': review_star,
                     'review_comment': review_comment,
                     'uploader_alias': uploader_alias,
