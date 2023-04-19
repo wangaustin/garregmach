@@ -34,6 +34,9 @@ with tab1:
 
     subtab1, subtab2 = st.tabs(['Search by School', 'Search by Dorm'])
 
+    ####################
+    # SEARCH BY SCHOOL #
+    ####################
     with subtab1:
         # ------ SCHOOL
         # -----------------------------
@@ -65,10 +68,14 @@ with tab1:
             dorm_review_search_cursor = COLLECTION_DORMITORY_REVIEWS.aggregate(pipeline)
             avg_star = next(dorm_review_search_cursor, {}).get("avg_star")
 
-            st.subheader('Result(s)')
-            st.caption('Average Star')
-            st.write(avg_star)
+            
 
+            st.subheader('Result(s)')
+            st.caption('School Average Star')
+            st.write(avg_star)
+            st.caption('School Dorms Ratings')
+            helpers.show_dorms_ratings_for_school(school_obj_id)
+            st.caption('Review Details')
             for doc in COLLECTION_DORMITORY_REVIEWS.find({'school':school_obj_id}):
                 helpers.format_review_doc(doc)
 

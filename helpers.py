@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 # import helper functions ../helpers.py
 import os, sys
@@ -16,6 +17,7 @@ COLLECTION_DEPARTMENT = DATABASE.Department
 COLLECTION_SCHOOL = DATABASE.School
 COLLECTION_PROFESSOR = DATABASE.Professor
 COLLECTION_DORMITORY = DATABASE.Dormitory
+COLLECTION_DORMITORY_REVIEWS = DATABASE.DormitoryReviews
 
 
 def find_all_schools():
@@ -237,6 +239,31 @@ def format_review_doc(doc):
         st.caption('Submitted Time')
         st.write(doc['submitted_time'])
             
+
+def show_dorms_ratings_for_school(school_id):
+    dorms_cursor = COLLECTION_DORMITORY.find({'school': school_id})
+    dorms_df = pd.DataFrame(list(dorms_cursor.clone()))
+    
+    for index, row in dorms_df.iterrows():
+        curr_dorm_obj_id = dorms_df.loc[index, '_id']
+        pipeline = [
+            {"$match": {'dorm': curr_dorm_obj_id}},
+            {"$group": {'_id': None, "avg_star": {"$avg": "$review_star"}}},
+        ]
+        dorm_review_search_cursor = COLLECTION_DORMITORY_REVIEWS.aggregate(pipeline)
+        avg_star = next(dorm_review_search_cursor, {}).get("avg_star")
+
+        dorms_df.loc[index, 'avg_star'] = avg_star
+        
+
+    dorms_df = dorms_df.drop(['_id', 'school'], axis=1)
+    dorms_df = dorms_df.rename({'name': 'Dorm', 'avg_star': 'Average Star'}, axis=1)
+
+
+    st.dataframe(dorms_df)
+
+
+
 
 # """
 # @param: url - url link that opens when clicked

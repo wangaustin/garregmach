@@ -105,6 +105,10 @@ _MAIN_DORMITORY_INTRO = """
     \nThe GMP Dormitory is a platform to rate and review your school's dorms.
     \n The goal of the GMP Dormitory is to help students make informed 
     decisions on where they decide to live during their studies.
+    #### Example
+    \nSuppose Tintin wants to live in a good dorm next year, but he doesn't know 
+    which dorm is good.
+    \nTintin can go to the GMP Dormitory and search
 """
 
 _MAIN_DINING_HALL_INTRO = """
