@@ -43,28 +43,6 @@ _DORMITORY_TAB_NAMES = [
     "🆕 Recently Added"
 ]
 
-#TODO: remove this and use data from DB
-_DORMITORY_VANDERBILT_DORMS = [
-    "Branscomb",
-    "Carmichael Towers East",
-    "Carmichael Towers West",
-    "Chaffin",
-    "Crawford House",
-    "E. Bronson Ingram",
-    "Gillette House",
-    "Hank Ingram House",
-    "Kissam Center",
-    "Lewis House",
-    "McGill",
-    "Memorial House",
-    "Murray House",
-    "Nicholas S. Zeppos",
-    "Stambaugh House",
-    "The Martha Rivers Ingram Commons",
-    "Tolman",
-    "Warren College"
-]
-
 
 # hide "made with streamlit" and upper right hamburger
 hide_streamlit_style = """

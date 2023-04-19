@@ -231,8 +231,9 @@ def format_review_doc(doc):
             st.write(doc['uploader_alias'])
         st.caption('Review Star')
         st.write(doc['review_star'])
-        st.caption('Review Comment')
-        st.write(doc['review_comment'])
+        if len(doc['review_comment']) > 0:
+            st.caption('Review Comment')
+            st.write(doc['review_comment'])
         st.caption('Submitted Time')
         st.write(doc['submitted_time'])
             

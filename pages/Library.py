@@ -13,14 +13,6 @@ import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import helpers
 
-
-
-# set configs
-st.set_page_config(
-    page_title = "Garreg Mach · Library",
-    page_icon = "📚"
-)
-
 st.markdown(configs.hide_streamlit_style, unsafe_allow_html=True)
 
 configs.setup_library_header()
