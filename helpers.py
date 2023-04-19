@@ -254,11 +254,9 @@ def show_dorms_ratings_for_school(school_id):
         avg_star = next(dorm_review_search_cursor, {}).get("avg_star")
 
         dorms_df.loc[index, 'avg_star'] = avg_star
-        
 
     dorms_df = dorms_df.drop(['_id', 'school'], axis=1)
     dorms_df = dorms_df.rename({'name': 'Dorm', 'avg_star': 'Average Star'}, axis=1)
-
 
     st.dataframe(dorms_df)
 
